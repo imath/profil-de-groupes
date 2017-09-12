@@ -92,6 +92,10 @@ final class Profil_De_Groupes {
 		spl_autoload_register( array( $this, 'autoload' ) );
 
 		require $this->inc_dir . 'functions.php';
+
+		if ( is_admin() ) {
+			require $this->inc_dir . 'admin.php';
+		}
 	}
 
 	/**
