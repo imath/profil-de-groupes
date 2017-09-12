@@ -81,6 +81,9 @@ final class Profil_De_Groupes {
 		$this->js_url     = trailingslashit( $this->url . 'js' );
 		$this->assets_url = trailingslashit( $this->url . 'assets' );
 		$this->inc_dir    = trailingslashit( $this->dir . 'inc' );
+
+		// @todo Create the install routine.
+		$this->fields_group = (int) bp_get_option( '_profil_de_groupes_id', 2 );
 	}
 
 	/**
@@ -106,13 +109,14 @@ final class Profil_De_Groupes {
 	 * @param  string $class The class name.
 	 */
 	public function autoload( $class ) {
-		$name = str_replace( '_', '-', strtolower( $class ) );
-
-		if ( 0 !== strpos( $name, $this->domain ) ) {
+		if ( 0 !== strpos( $class, get_class() ) ) {
 			return;
 		}
 
-		$path = $this->inc_dir . "classes/class-{$name}.php";
+		$path = sprintf( '%1$sclasses/class-%2$s.php',
+			$this->inc_dir,
+			str_replace( '_', '-', strtolower( $class ) )
+		);
 
 		// Sanity check.
 		if ( ! file_exists( $path ) ) {
