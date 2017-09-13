@@ -63,10 +63,18 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	 * @param integer $group_id The group ID.
 	 */
 	public function edit_screen( $group_id = null ) {
-		if ( bp_has_profile( 'profile_group_id=2' ) ) :
-			while ( bp_profile_groups() ) : bp_the_profile_group(); ?>
+		$fields_group = profil_de_groupes_get_fields_group();
 
-				<form action="" method="post" id="profile-edit-form" class="standard-form">
+		if ( ! $fields_group ) {
+			printf( '<div id="message" class="error"><p>%s</p></div>',
+				esc_html__( 'Une erreur est survenue, merci de contacter l\'administrateur de ce site', 'profil-de-groupes' )
+			);
+
+			return;
+		}
+
+		if ( bp_has_profile( array( 'profile_group_id' => $fields_group, 'fetch_field_data' => false ) ) ) :
+			while ( bp_profile_groups() ) : bp_the_profile_group(); ?>
 
 				<?php while ( bp_profile_fields() ) : bp_the_profile_field(); ?>
 
@@ -85,9 +93,7 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 
 				<?php endwhile; ?>
 
-					<input type="hidden" name="field_ids" id="field_ids" value="<?php bp_the_profile_field_ids(); ?>" />
-
-				</form>
+				<input type="hidden" name="field_ids" id="field_ids" value="<?php bp_the_profile_field_ids(); ?>" />
 
 		<?php endwhile; endif;
 	}

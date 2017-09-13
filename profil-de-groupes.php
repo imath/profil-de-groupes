@@ -82,8 +82,8 @@ final class Profil_De_Groupes {
 		$this->assets_url = trailingslashit( $this->url . 'assets' );
 		$this->inc_dir    = trailingslashit( $this->dir . 'inc' );
 
-		// @todo Create the install routine.
-		$this->fields_group = (int) bp_get_option( '_profil_de_groupes_id', 2 );
+		// The Fields group ID for Groups profile fields.
+		$this->fields_group = (int) bp_get_option( '_profil_de_groupes_id', 0 );
 	}
 
 	/**
