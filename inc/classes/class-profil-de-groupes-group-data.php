@@ -226,28 +226,6 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 
 		return true;
 	}
-
-	/**
-	 * Gets the field IDs having a meta_key set to a specific meta_value.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param  string  $meta_key   The meta key. Default: _profil_de_groupes_about_us
-	 * @param  integer $meta_value The meta value. Default: 1
-	 * @return array               The field IDs matching meta key => meta value.
-	 */
-	public static function get_field_ids_for_meta_key( $meta_key = '_profil_de_groupes_about_us', $meta_value = 1 ) {
-		global $wpdb;
-		$bp = buddypress();
-
-		$field_ids = $wpdb->get_col( $wpdb->prepare(
-			"SELECT object_id FROM {$bp->profile->table_name_meta} WHERE object_type='field' AND meta_key = %s AND meta_value = %d",
-			$meta_key,
-			$meta_value
-		) );
-
-		return $field_ids;
-	}
 }
 
 endif;

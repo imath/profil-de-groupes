@@ -23,10 +23,17 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	 * @since  1.0.0
 	 */
 	public function __construct() {
+		$group = groups_get_current_group();
+
+		$visibility = 'private';
+		if ( 'public' === $group->status ) {
+			$visibility = 'public';
+		}
+
 		parent::init(  array(
 			'slug'              => profil_de_groupes_get_slug(),
 			'name'              => __( 'A propos de nous', 'altctrl-public-group' ),
-			'visibility'        => 'public',
+			'visibility'        => $visibility,
 			'nav_item_position' => 14,
 			'enable_nav_item'   => true,
 			'screens'           => array(
@@ -34,7 +41,7 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 					'enabled' => false,
 				),
 				'create' => array(
-					'enabled' => false,
+					'enabled' => true,
 					'position' => 14,
 				),
 				'edit' => array(
@@ -52,10 +59,45 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	public function widget_display() {}
 
 	/**
-	 * @todo the Current Group ID won't be set here.
+	 * Checks if the installation has been completed.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return boolean Whether the group of Group Profile fields has been created or not.
 	 */
-	public function create_screen( $group_id = null ) {}
-	public function create_screen_save( $group_id = null ) {}
+	public function installation_failed() {
+		$return = '';
+
+		if ( ! profil_de_groupes_get_fields_group() ) {
+			$return = sprintf( '<div id="message" class="error"><p>%s</p></div>',
+				esc_html__( 'Une erreur est survenue, merci de contacter l\'administrateur de ce site', 'profil-de-groupes' )
+			);
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Display the create step.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  integer $group_id The ID of the group being created.
+	 */
+	public function create_screen( $group_id = null ) {
+		$this->edit_screen( $group_id );
+	}
+
+	/**
+	 * Saves the fields during the create step.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  integer $group_id The ID of the group being created.
+	 */
+	public function create_screen_save( $group_id = null ) {
+		$this->edit_screen_save( $group_id );
+	}
 
 	/**
 	 * Displays the Group's profile fields.
@@ -65,13 +107,8 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	 * @param integer $group_id The group ID.
 	 */
 	public function display( $group_id = null ) {
-		$fields_group = profil_de_groupes_get_fields_group();
-
-		if ( ! $fields_group ) {
-			printf( '<div id="message" class="error"><p>%s</p></div>',
-				esc_html__( 'Une erreur est survenue, merci de contacter l\'administrateur de ce site', 'profil-de-groupes' )
-			);
-
+		if ( $error = $this->installation_failed() ) {
+			echo $error;
 			return;
 		}
 
@@ -109,6 +146,13 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 			endwhile;
 
 		endif;
+
+		if ( profil_de_groupes_empty_profile() ) : ?>
+			<div id="message" class="info">
+				<p><?php esc_html_e( 'Ce groupe n\'a pas encore publié ses informations de profil, repassez un peu plus tard !', 'profil-de-groupes' ); ?></p>
+			</div>
+
+		<?php endif;
 	}
 
 	/**
@@ -119,18 +163,13 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	 * @param integer $group_id The group ID.
 	 */
 	public function edit_screen( $group_id = null ) {
-		$fields_group = profil_de_groupes_get_fields_group();
-
-		if ( ! $fields_group ) {
-			printf( '<div id="message" class="error"><p>%s</p></div>',
-				esc_html__( 'Une erreur est survenue, merci de contacter l\'administrateur de ce site', 'profil-de-groupes' )
-			);
-
+		if ( $error = $this->installation_failed() ) {
+			echo $error;
 			return;
 		}
 
 		if ( bp_has_profile( profil_de_groupes_get_loop_args() ) ) :
-			while ( bp_profile_groups() ) : bp_the_profile_group(); profil_de_groupes_fetch_fields_data(); ?>
+			while ( bp_profile_groups() ) : bp_the_profile_group(); profil_de_groupes_fetch_fields_data( $group_id ); ?>
 
 				<?php while ( bp_profile_fields() ) : bp_the_profile_field(); ?>
 
@@ -167,7 +206,7 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	 * @param integer $group_id The group ID.
 	 */
 	public function edit_screen_save( $group_id = null ) {
-		if ( empty( $_POST['field_ids'] ) || ! bp_is_item_admin() ) {
+		if ( empty( $_POST['field_ids'] ) || ( ! bp_is_item_admin() && ! bp_is_group_create() ) ) {
 			return;
 		}
 
@@ -188,6 +227,10 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 		// There are errors.
 		if ( ! empty( $errors ) ) {
 			bp_core_add_message( __( 'Certains champs requis sont manquants. Merci de les définir.', 'profil-de-groupes' ), 'error' );
+
+			if ( bp_is_group_create() ) {
+				bp_core_redirect( trailingslashit( bp_get_groups_directory_permalink() . 'create/step/' . bp_get_groups_current_create_step() ) );
+			}
 
 		// No errors.
 		} else {
@@ -225,6 +268,9 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 			// Set the feedback messages.
 			if ( ! empty( $errors ) ) {
 				bp_core_add_message( __( 'Des erreurs sont survenues lors de la mise à jour des champs de profil du groupe.', 'profil-de-groupes' ), 'error' );
+			} elseif ( bp_is_group_create() ) {
+				return true;
+
 			} else {
 				bp_core_add_message( __( 'Profil mis à jour avec succès.', 'profil-de-groupes' ) );
 			}

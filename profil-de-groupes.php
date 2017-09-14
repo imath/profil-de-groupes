@@ -92,6 +92,10 @@ final class Profil_De_Groupes {
 	 * @since 1.0.0
 	 */
 	private function inc() {
+		if ( ! bp_is_active( 'groups' ) || ! bp_is_active( 'xprofile' ) ) {
+			return;
+		}
+
 		spl_autoload_register( array( $this, 'autoload' ) );
 
 		require $this->inc_dir . 'functions.php';

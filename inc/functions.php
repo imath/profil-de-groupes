@@ -141,7 +141,7 @@ function profil_de_groupes_set_field_data( $field_id = 0, $group_id = 0, $value 
  *
  * @since  1.0.0
  */
-function profil_de_groupes_fetch_fields_data() {
+function profil_de_groupes_fetch_fields_data( $group_id = 0 ) {
 	global $group;
 
 	$field_ids = array();
@@ -150,12 +150,15 @@ function profil_de_groupes_fetch_fields_data() {
 		$field_ids = wp_list_pluck( $group->fields, 'id' );
 	}
 
-
 	if ( ! $field_ids ) {
 		return false;
 	}
 
-	$data = Profil_De_Groupes_Group_Data::get_data_for_group( bp_get_current_group_id(), $field_ids );
+	if ( ! $group_id ) {
+		$group_id = bp_get_current_group_id();
+	}
+
+	$data = Profil_De_Groupes_Group_Data::get_data_for_group( $group_id, $field_ids );
 
 	if ( ! is_array( $data ) ) {
 		return false;
@@ -171,6 +174,27 @@ function profil_de_groupes_fetch_fields_data() {
 		$data_field = reset( $data_field );
 		$group->fields[ $k ]->data = (object) array( 'id' => $data_field->id, 'value' => $data_field->value );
 	}
+}
+
+/**
+ * Does the current group has no profile fields defined?
+ *
+ * @since  1.0.0
+ *
+ * @return boolean True if the group has no profile fields defined. False otherwise.
+ */
+function profil_de_groupes_empty_profile() {
+	global $group;
+
+	$empty_profile = true;
+
+	if ( ! empty( $group->fields ) ) {
+		$field_data = wp_list_pluck( $group->fields, 'data' );
+
+		$empty_profile = empty( array_filter( $field_data ) );
+	}
+
+	return $empty_profile;
 }
 
 /**
@@ -323,17 +347,6 @@ function profil_de_groupes_remove_field_filters() {
 }
 
 /**
- * Gets the disabled fields for BP Groups.
- *
- * @since 1.0.0
- *
- * @return array The disabled fields for BP Groups.
- */
-function profil_de_groupes_get_disabled_fields() {
-	return array_map( 'intval', Profil_De_Groupes_Group_Data::get_field_ids_for_meta_key() );
-}
-
-/**
  * Builds the query argument for the Group's profile loop.
  *
  * @since 1.0.0
@@ -349,13 +362,6 @@ function profil_de_groupes_get_loop_args() {
 	 * @param array $value The custom arguments for the public loop.
 	 */
 	$customs = apply_filters( 'profil_de_groupes_get_loop_args', array() );
-
-	// Get the disabled field IDs.
-	$disabled = profil_de_groupes_get_disabled_fields();
-
-	if ( $disabled ) {
-		$customs['exclude_fields'] = $disabled;
-	}
 
 	return array_merge( array(
 		'profile_group_id' => profil_de_groupes_get_fields_group(),
