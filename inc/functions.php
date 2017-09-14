@@ -321,3 +321,44 @@ function profil_de_groupes_remove_field_filters() {
 	// This one is particular
 	remove_filter( 'bp_get_the_profile_field_datebox', 'profil_de_groupes_set_options_date', 10, 7 );
 }
+
+/**
+ * Gets the disabled fields for BP Groups.
+ *
+ * @since 1.0.0
+ *
+ * @return array The disabled fields for BP Groups.
+ */
+function profil_de_groupes_get_disabled_fields() {
+	return array_map( 'intval', Profil_De_Groupes_Group_Data::get_field_ids_for_meta_key() );
+}
+
+/**
+ * Builds the query argument for the Group's profile loop.
+ *
+ * @since 1.0.0
+ *
+ * @return array The query argument for the Group's profile loop.
+ */
+function profil_de_groupes_get_loop_args() {
+	/**
+	 * Filter here to add custom args for the public profile loop.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param array $value The custom arguments for the public loop.
+	 */
+	$customs = apply_filters( 'profil_de_groupes_get_loop_args', array() );
+
+	// Get the disabled field IDs.
+	$disabled = profil_de_groupes_get_disabled_fields();
+
+	if ( $disabled ) {
+		$customs['exclude_fields'] = $disabled;
+	}
+
+	return array_merge( array(
+		'profile_group_id' => profil_de_groupes_get_fields_group(),
+		'fetch_field_data' => false
+	), $customs );
+}

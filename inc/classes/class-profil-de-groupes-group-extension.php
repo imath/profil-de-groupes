@@ -47,12 +47,69 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Unused
 	 */
-	public function create_screen( $group_id = null ) {}
-	public function create_screen_save( $group_id = null ) {}
 	public function admin_screen( $group_id = null ) {}
 	public function admin_screen_save( $group_id = null ) {}
-	public function display( $group_id = null ) {}
 	public function widget_display() {}
+
+	/**
+	 * @todo the Current Group ID won't be set here.
+	 */
+	public function create_screen( $group_id = null ) {}
+	public function create_screen_save( $group_id = null ) {}
+
+	/**
+	 * Displays the Group's profile fields.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param integer $group_id The group ID.
+	 */
+	public function display( $group_id = null ) {
+		$fields_group = profil_de_groupes_get_fields_group();
+
+		if ( ! $fields_group ) {
+			printf( '<div id="message" class="error"><p>%s</p></div>',
+				esc_html__( 'Une erreur est survenue, merci de contacter l\'administrateur de ce site', 'profil-de-groupes' )
+			);
+
+			return;
+		}
+
+		if ( bp_has_profile( profil_de_groupes_get_loop_args() ) ) :
+
+			while ( bp_profile_groups() ) : bp_the_profile_group(); profil_de_groupes_fetch_fields_data();
+
+				if ( bp_profile_group_has_fields() ) : ?>
+
+					<div class="bp-widget <?php bp_the_profile_group_slug(); ?>">
+
+						<table class="profile-fields">
+
+							<?php while ( bp_profile_fields() ) : bp_the_profile_field(); ?>
+
+								<?php if ( bp_field_has_data() ) : ?>
+
+									<tr<?php bp_field_css_class(); ?>>
+
+										<td class="label"><?php bp_the_profile_field_name(); ?></td>
+
+										<td class="data"><?php bp_the_profile_field_value(); ?></td>
+
+									</tr>
+
+								<?php endif;
+
+							endwhile; ?>
+
+						</table>
+					</div>
+
+				<?php endif;
+
+			endwhile;
+
+		endif;
+	}
 
 	/**
 	 * Displays the form to edit fields.
@@ -72,7 +129,7 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 			return;
 		}
 
-		if ( bp_has_profile( array( 'profile_group_id' => $fields_group, 'fetch_field_data' => false ) ) ) :
+		if ( bp_has_profile( profil_de_groupes_get_loop_args() ) ) :
 			while ( bp_profile_groups() ) : bp_the_profile_group(); profil_de_groupes_fetch_fields_data(); ?>
 
 				<?php while ( bp_profile_fields() ) : bp_the_profile_field(); ?>
