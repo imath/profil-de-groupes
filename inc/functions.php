@@ -22,6 +22,33 @@ function profil_de_groupes_get_fields_group() {
 }
 
 /**
+ * Checks if the Groups Admin profile screen is displayed.
+ *
+ * @since 1.0.0
+ *
+ * @return boolean True if the Groups Admin profile screen is displayed.
+ *                 False otherwise.
+ */
+function profil_de_groupes_is_admin() {
+	$return = false;
+
+	if ( ! is_admin() ) {
+		return $return;
+	}
+
+	$current_screen = get_current_screen();
+
+	if ( ! isset( $current_screen->id ) ) {
+		return $return;
+	} else {
+		$screen_id = explode( '_', $current_screen->id );
+		$return    = 'bp-profile-setup-groupes' === end( $screen_id );
+	}
+
+	return $return;
+}
+
+/**
  * Overrides the list of available Groups of fields.
  *
  * PS: if the Groups group of fields is requested, returns this one only.
@@ -38,8 +65,7 @@ function profil_de_groupes_set_fields_group( $groups = array(), $args = array() 
 		$group_field_group = wp_list_filter( $groups, array( 'id' => profil_de_groupes_get_fields_group() ) );
 
 		if ( ! empty( $group_field_group ) ) {
-			if ( ( is_admin() && 'groups_page_bp-profile-setup-groupes' === get_current_screen()->id )
-			  || ( isset( $args['profile_group_id'] ) && profil_de_groupes_get_fields_group() === (int) $args['profile_group_id'] ) ) {
+			if ( profil_de_groupes_is_admin() || ( isset( $args['profile_group_id'] ) && profil_de_groupes_get_fields_group() === (int) $args['profile_group_id'] ) ) {
 				return $group_field_group;
 			}
 
@@ -130,6 +156,11 @@ function profil_de_groupes_fetch_fields_data() {
 
 	foreach ( $group->fields as $k => $field ) {
 		$data_field = wp_list_filter( $data, array( 'field_id' => $field->id ) );
+
+		if ( empty( $data_field ) || ! is_array( $data_field ) ) {
+			continue;
+		}
+
 		$data_field = reset( $data_field );
 		$group->fields[ $k ]->data = (object) array( 'id' => $data_field->id, 'value' => $data_field->value );
 	}

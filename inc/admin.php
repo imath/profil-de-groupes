@@ -156,7 +156,7 @@ function profil_de_groupes_admin() {
  * @since 1.0.0
  */
 function profil_de_groupes_admin_js() {
-	if ( 'groups_page_bp-profile-setup-groupes' !== get_current_screen()->id ) {
+	if ( ! profil_de_groupes_is_admin() ) {
 		return;
 	}
 
