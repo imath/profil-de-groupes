@@ -158,21 +158,51 @@ function profil_de_groupes_fetch_fields_data( $group_id = 0 ) {
 		$group_id = bp_get_current_group_id();
 	}
 
-	$data = Profil_De_Groupes_Group_Data::get_data_for_group( $group_id, $field_ids );
+	$group_fields = (array) wp_cache_get( 'group_fields', 'profil_de_groupes' );
+	$group_fields = array_filter( $group_fields );
 
-	if ( ! is_array( $data ) ) {
-		return false;
-	}
+	// Use Database
+	if ( ! isset( $group_fields[ $group_id ] ) ) {
+		$data = Profil_De_Groupes_Group_Data::get_data_for_group( $group_id, $field_ids );
 
-	foreach ( $group->fields as $k => $field ) {
-		$data_field = wp_list_filter( $data, array( 'field_id' => $field->id ) );
-
-		if ( empty( $data_field ) || ! is_array( $data_field ) ) {
-			continue;
+		if ( ! is_array( $data ) ) {
+			return false;
 		}
 
-		$data_field = reset( $data_field );
-		$group->fields[ $k ]->data = (object) array( 'id' => $data_field->id, 'value' => $data_field->value );
+		foreach ( $group->fields as $k => $field ) {
+			$data_field = wp_list_filter( $data, array( 'field_id' => $field->id ) );
+
+			if ( empty( $data_field ) || ! is_array( $data_field ) ) {
+				continue;
+			}
+
+			$data_field = reset( $data_field );
+			$group->fields[ $k ]->data = (object) array(
+				'id'       => $data_field->id,
+				'field_id' => $field->id,
+				'name'     => $field->name,
+				'value'    => $data_field->value
+			);
+		}
+
+		$d = wp_filter_object_list( $group->fields, array(), 'and', 'data' );
+		$group_fields[ $group_id ] = array();
+
+		foreach( $d as $f ) {
+			$group_fields[ $group_id ][ $f->field_id] = $f;
+		}
+
+		wp_cache_set( 'group_fields', $group_fields, 'profil_de_groupes' );
+
+	// Use cache.
+	} else {
+		foreach ( $group->fields as $k => $field ) {
+			if ( ! isset( $group_fields[ $group_id ][ $field->id ] ) ) {
+				continue;
+			}
+
+			$group->fields[ $k ]->data = $group_fields[ $group_id ][ $field->id ];
+		}
 	}
 }
 
@@ -340,16 +370,83 @@ function profil_de_groupes_get_field_data( $names = '', $group_id = 0 ) {
 		return false;
 	}
 
-	// @todo cache
+	$return_array = true;
+	if ( ! is_array( $names ) ) {
+		$names        = (array) $names;
+		$return_array = false;
+	}
 
-	$data = Profil_De_Groupes_Group_Data::get_value_byfieldname( $names, $group_id );
+	if ( empty( $group_id ) ) {
+		$group_id = bp_get_current_group_id();
+	}
+
+	$data         = array();
+	$field_name   = array();
+	$group_fields = (array) wp_cache_get( 'group_fields', 'profil_de_groupes' );
+	$group_fields = array_filter( $group_fields );
+
+	foreach ( $names as $k => $name ) {
+		$key = sanitize_key( $name );
+
+		$field_name[ $key ] = (array) wp_cache_get( $key, 'profil_de_groupes' );
+		$field_name[ $key ] = array_filter( $field_name[ $key ] );
+
+		if ( ! isset( $field_name[ $key ][ $group_id ] ) ) {
+			if ( ! isset( $group_fields[ $group_id ] ) ) {
+				continue;
+			}
+
+			$gfc = wp_list_filter( $group_fields[ $group_id ], array( 'name' => $name ) );
+			$gfc = reset( $gfc );
+
+			if ( empty( $gfc ) ) {
+				continue;
+			}
+
+			$data[ $name ]                   = $gfc->value;
+			$field_name[ $key ][ $group_id ] = $gfc->value;
+
+
+			wp_cache_set( $key, $field_name[ $key ], 'profil_de_groupes' );
+			unset( $names[ $k ] );
+		} else {
+			$data[ $name ] = $field_name[ $key ][ $group_id ];
+			unset( $names[ $k ] );
+		}
+	}
+
+	if ( ! empty( $names ) ) {
+		$db_data = Profil_De_Groupes_Group_Data::get_value_byfieldname( $names, $group_id );
+
+		if ( $db_data ) {
+			foreach ( $db_data as $kn => $vn ) {
+				$key_n = sanitize_key( $kn );
+
+				$field_name[ $key_n ][ $group_id ] = $vn;
+				wp_cache_set( $key_n, $field_name[ $key_n ], 'profil_de_groupes' );
+			}
+		}
+
+		$data = array_merge( $data, $db_data );
+	}
 
 	if ( ! $data ) {
 		return false;
 
-	} elseif ( is_array( $data ) ) {
+	} elseif ( $return_array ) {
 		return array_map( 'maybe_unserialize', $data );
 	}
 
+	$data = reset( $data );
 	return maybe_unserialize( $data );
 }
+
+/**
+ * Adds the plugin's cache group.
+ *
+ * @since 1.0.0
+ */
+function profil_de_groupes_setup_cache_group() {
+	wp_cache_add_global_groups( 'profil_de_groupes' );
+}
+add_action( 'bp_include', 'profil_de_groupes_setup_cache_group' );

@@ -265,10 +265,6 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 
 		$group_id = $user_id;
 
-		if ( empty( $group_id ) ) {
-			$group_id = bp_get_current_group_id();
-		}
-
 		if ( ! $group_id ) {
 			return false;
 		}
