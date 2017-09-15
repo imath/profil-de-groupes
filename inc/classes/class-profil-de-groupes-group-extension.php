@@ -26,7 +26,7 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 		$group = groups_get_current_group();
 
 		$visibility = 'private';
-		if ( 'public' === $group->status ) {
+		if ( isset( $group->status ) && 'public' === $group->status ) {
 			$visibility = 'public';
 		}
 
@@ -112,47 +112,7 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 			return;
 		}
 
-		if ( bp_has_profile( profil_de_groupes_get_loop_args() ) ) :
-
-			while ( bp_profile_groups() ) : bp_the_profile_group(); profil_de_groupes_fetch_fields_data();
-
-				if ( bp_profile_group_has_fields() ) : ?>
-
-					<div class="bp-widget <?php bp_the_profile_group_slug(); ?>">
-
-						<table class="profile-fields">
-
-							<?php while ( bp_profile_fields() ) : bp_the_profile_field(); ?>
-
-								<?php if ( bp_field_has_data() ) : ?>
-
-									<tr<?php bp_field_css_class(); ?>>
-
-										<td class="label"><?php bp_the_profile_field_name(); ?></td>
-
-										<td class="data"><?php bp_the_profile_field_value(); ?></td>
-
-									</tr>
-
-								<?php endif;
-
-							endwhile; ?>
-
-						</table>
-					</div>
-
-				<?php endif;
-
-			endwhile;
-
-		endif;
-
-		if ( profil_de_groupes_empty_profile() ) : ?>
-			<div id="message" class="info">
-				<p><?php esc_html_e( 'Ce groupe n\'a pas encore publié ses informations de profil, repassez un peu plus tard !', 'profil-de-groupes' ); ?></p>
-			</div>
-
-		<?php endif;
+		bp_get_template_part( 'groups/single/profil-du-groupe' );
 	}
 
 	/**

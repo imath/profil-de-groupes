@@ -81,6 +81,7 @@ final class Profil_De_Groupes {
 		$this->js_url     = trailingslashit( $this->url . 'js' );
 		$this->assets_url = trailingslashit( $this->url . 'assets' );
 		$this->inc_dir    = trailingslashit( $this->dir . 'inc' );
+		$this->tpl_dir    = trailingslashit( $this->dir . 'templates' );
 
 		// The Fields group ID for Groups profile fields.
 		$this->fields_group = (int) bp_get_option( '_profil_de_groupes_id', 0 );
@@ -99,6 +100,7 @@ final class Profil_De_Groupes {
 		spl_autoload_register( array( $this, 'autoload' ) );
 
 		require $this->inc_dir . 'functions.php';
+		require $this->inc_dir . 'templates.php';
 
 		if ( is_admin() ) {
 			require $this->inc_dir . 'admin.php';
