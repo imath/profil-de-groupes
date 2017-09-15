@@ -128,34 +128,12 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 			return;
 		}
 
-		if ( bp_has_profile( profil_de_groupes_get_loop_args() ) ) :
-			while ( bp_profile_groups() ) : bp_the_profile_group(); profil_de_groupes_fetch_fields_data( $group_id ); ?>
+		$pdg = profil_de_groupes();
+		$pdg->current_group_id = $group_id;
 
-				<?php while ( bp_profile_fields() ) : bp_the_profile_field(); ?>
+		bp_get_template_part( 'groups/single/admin/profil-du-groupe' );
 
-					<div<?php bp_field_css_class( 'editfield' ); ?>>
-						<fieldset>
-
-							<?php
-							/**
-							 * Generate the field edit output.
-							 */
-							$field_type = bp_xprofile_create_field_type( bp_get_the_profile_field_type() );
-
-							profil_de_groupes_add_field_filters();
-
-							$field_type->edit_field_html();
-
-							profil_de_groupes_remove_field_filters(); ?>
-
-						</fieldset>
-					</div>
-
-				<?php endwhile; ?>
-
-				<input type="hidden" name="field_ids" id="field_ids" value="<?php bp_the_profile_field_ids(); ?>" />
-
-		<?php endwhile; endif;
+		unset( $pdg->current_group_id );
 	}
 
 	/**

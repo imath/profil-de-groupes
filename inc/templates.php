@@ -101,8 +101,15 @@ function profil_de_groupes_profiles() {
  * @since 1.0.0
  */
 function profil_de_groupes_profile() {
+	$group_id = null;
+	$pdg      = profil_de_groupes();
+
+	if ( isset( $pdg->current_group_id ) ) {
+		$group_id = $pdg->current_group_id;
+	}
+
 	bp_the_profile_group();
-	profil_de_groupes_fetch_fields_data();
+	profil_de_groupes_fetch_fields_data( $group_id );
 }
 
 /**
@@ -160,8 +167,8 @@ function profil_de_groupes_field_has_data() {
  *
  * @since 1.0.0
  */
-function profil_de_groupes_field_css_class() {
-	echo bp_get_field_css_class( 'group' );
+function profil_de_groupes_field_css_class( $context = 'displayfield' ) {
+	echo bp_get_field_css_class( $context );
 }
 
 /**
@@ -184,6 +191,32 @@ function profil_de_groupes_field_name() {
  */
 function profil_de_groupes_field_data() {
 	bp_the_profile_field_value();
+}
+
+/**
+ * Generates the field edit output.
+ *
+ * @since 1.0.0
+ */
+function profil_de_groupes_edit_field() {
+	$field_type = bp_xprofile_create_field_type( bp_get_the_profile_field_type() );
+
+	profil_de_groupes_add_field_filters();
+
+	$field_type->edit_field_html();
+
+	profil_de_groupes_remove_field_filters();
+}
+
+/**
+ * Outputs a comma separated list of field IDs.
+ *
+ * Wraps bp_the_profile_field_value().
+ *
+ * @since 1.0.0
+ */
+function profil_de_groupes_field_ids() {
+	bp_the_profile_field_ids();
 }
 
 /**
