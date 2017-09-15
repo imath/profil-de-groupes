@@ -368,3 +368,32 @@ function profil_de_groupes_get_loop_args() {
 		'fetch_field_data' => false
 	), $customs );
 }
+
+/**
+ * Get a Group's field data.
+ *
+ * @since  1.0.0
+ *
+ * @param  array|string      $fields   Field(s) to get.
+ * @param  integer           $group_id Group ID to get field data for.
+ * @return string|array|bool           The field value, an array of field values.
+ *                                     False when no values were found.
+ */
+function profil_de_groupes_get_field_data( $names = '', $group_id = 0 ) {
+	if ( empty( $names ) ) {
+		return false;
+	}
+
+	// @todo cache
+
+	$data = Profil_De_Groupes_Group_Data::get_value_byfieldname( $names, $group_id );
+
+	if ( ! $data ) {
+		return false;
+
+	} elseif ( is_array( $data ) ) {
+		return array_map( 'maybe_unserialize', $data );
+	}
+
+	return maybe_unserialize( $data );
+}

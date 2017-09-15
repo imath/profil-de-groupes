@@ -84,7 +84,30 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 	public static function get_all_for_user( $user_id ) {}
 	public static function get_fielddataid_byid( $field_id, $user_id ) {}
 	public static function get_value_byid( $field_id, $user_ids = null ) {}
-	public static function get_value_byfieldname( $fields, $user_id = null ) {}
+
+	/**
+	 * Utility to override the $wpdb->query when needed.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  string $query The SQL query.
+	 * @return string        The SQL query.
+	 */
+	public static function edit_wpdb_query( $query = '' ) {
+		global $wpdb;
+
+		$db = sprintf( '%sprofil_de_groupes_data', $wpdb->base_prefix );
+
+		if ( preg_match( '/' . $db . '/', $query, $tb_name ) ) {
+			$tb_name = reset( $tb_name );
+
+			if ( $db === $tb_name ) {
+				$query = str_replace( 'user_id', 'group_id', $query );
+			}
+		}
+
+		return $query;
+	}
 
 	/**
 	 * Check if there is data already for the group.
@@ -225,6 +248,52 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets Group's profile field values by field name and user ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param  array|string      $fields  Field(s) to get.
+	 * @param  integer|null      $user_id Group ID to get field data for.
+	 * @return string|array|bool          The field value, an array of field valuers.
+	 *                                    False when no values were found.
+	 */
+	public static function get_value_byfieldname( $fields, $user_id = null ) {
+		global $wpdb;
+
+		$group_id = $user_id;
+
+		if ( empty( $group_id ) ) {
+			$group_id = bp_get_current_group_id();
+		}
+
+		if ( ! $group_id ) {
+			return false;
+		}
+
+		// Gets the BuddyPress main instance.
+		$bp = buddypress();
+
+		// Stores the original xProlile table name.
+		$tb_name_reset = $bp->profile->table_name_data;
+
+		// Override the xProfile
+		$bp->profile->table_name_data = sprintf( '%sprofil_de_groupes_data', $wpdb->base_prefix );
+
+		// Temporarly filters the query.
+		add_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
+
+		$field_values = parent::get_value_byfieldname( $fields, $group_id );
+
+		// Removes the temporary filter on the query.
+		remove_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
+
+		// Restores the xProlile table name.
+		$bp->profile->table_name_data = $tb_name_reset;
+
+		return $field_values;
 	}
 }
 
