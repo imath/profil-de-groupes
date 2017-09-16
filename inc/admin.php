@@ -119,7 +119,7 @@ function profil_de_groupes_admin_menu() {
 		return false;
 	}
 
-	add_submenu_page(
+	$screen_id = add_submenu_page(
 		'bp-groups',
 		_x( 'Champs de profil des groupes', 'admin page title', 'profil-de-groupes' ),
 		_x( 'Champs de profil', 'admin menu title', 'profil-de-groupes' ),
@@ -127,11 +127,42 @@ function profil_de_groupes_admin_menu() {
 		'bp-profile-setup-groupes',
 		'profil_de_groupes_admin'
 	);
+
+	add_action( 'load-' . $screen_id, 'profil_de_groupes_load_admin' );
 }
 add_action( bp_core_admin_hook(), 'profil_de_groupes_admin_menu' );
 
 /**
- * Loads the Groups Profile Admin UI.
+ * Early validates the field name.
+ *
+ * @since  1.0.0
+ */
+function profil_de_groupes_load_admin() {
+	if ( ! isset( $_POST['saveField'] ) || ! isset( $_POST['title'] ) ) {
+		return;
+	}
+
+	/**
+	 * Let's make sure field names are unique to keep it
+	 * simple for the cache strategy the plugin is using.
+	 */
+	$profile_get_vars = wp_parse_args( $_GET, array(
+		'mode'     => false,
+		'field_id' => 0,
+	) );
+
+	if ( in_array( $profile_get_vars['mode'], array( 'add_field', 'edit_field' ), true ) ) {
+		$dupe_id = profil_de_groupes_admin_check_duplicates( $_POST['title'] );
+
+		if ( $dupe_id && $dupe_id !== (int) $profile_get_vars['field_id'] ) {
+			wp_safe_redirect( add_query_arg( 'pdg_error', 'dupe' ) );
+			exit();
+		}
+	}
+}
+
+/**
+ * Diplays the Groups Profile Admin UI.
  *
  * @since 1.0.0
  */
@@ -146,8 +177,44 @@ function profil_de_groupes_admin() {
 		return;
 	}
 
-	// It's the xProfile one!
-	xprofile_admin();
+	// Take care of the duplicate name error.
+	if ( ! empty( $_GET['pdg_error'] ) ) {
+		$message = apply_filters(
+			'profil_de_groupes_admin_error',
+			__( 'Il est impératif que le nom des champs soient uniques.', 'profil-de-groupes' ),
+			$_GET['pdg_error']
+		);
+
+		xprofile_admin_screen( $message, 'error' );
+
+	// Leave BuddyPress manage other cases.
+	} else {
+		xprofile_admin();
+	}
+}
+
+/**
+ * Checks the field's name is not dupe.
+ *
+ * @since  1.0.0
+ *
+ * @param  string  $field_name The field name to check.
+ * @return integer             The field ID found or 0 if no dupes were found.
+ */
+function profil_de_groupes_admin_check_duplicates( $field_name = '' ) {
+	global $wpdb;
+
+	if ( empty( $field_name ) ) {
+		return 0;
+	}
+
+	$table = buddypress()->profile->table_name_fields;
+
+	return (int) $wpdb->get_var( $wpdb->prepare(
+		"SELECT id FROM {$table} WHERE name = %s AND parent_id = 0 AND group_id = %d",
+		$field_name,
+		profil_de_groupes()->fields_group
+	) );
 }
 
 /**
@@ -192,3 +259,17 @@ function profil_de_groupes_admin_js() {
 	} )( jQuery )', esc_url_raw( $xprofile_admin_url ), esc_url_raw( $gprofile_admin_url ) ) );
 }
 add_action( 'bp_admin_enqueue_scripts', 'profil_de_groupes_admin_js' );
+
+/**
+ * Add a specific removable query arg to WordPress ones.
+ *
+ * @since  1.0.0
+ *
+ * @param  array $rqa The removable query args.
+ * @return array      The removable query args.
+ */
+function profil_de_groupes_admin_removable_query_args( $rqa = array() ) {
+	$rqa[] = 'pdg_error';
+	return $rqa;
+}
+add_filter( 'removable_query_args', 'profil_de_groupes_admin_removable_query_args', 10, 1 );
