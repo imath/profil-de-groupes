@@ -133,7 +133,20 @@ function profil_de_groupes_set_field_data( $field_id = 0, $group_id = 0, $value 
 	$field_data->group_id = $group_id;
 	$field_data->value    = maybe_serialize( $value );
 
-	return $field_data->save();
+	$saved = $field_data->save();
+
+	/**
+	 * Fires when a Group's profile field has been saved.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  integer $field_id The ID of the field.
+	 * @param  integer $group_id The ID of the group.
+	 * @param  boolean $saved    True on success, false on failure.
+	 */
+	do_action( 'profil_de_groupes_set_field_data', $field_id, $group_id, $saved );
+
+	return $saved;
 }
 
 /**
@@ -452,3 +465,28 @@ function profil_de_groupes_setup_cache_group() {
 	wp_cache_add_global_groups( 'profil_de_groupes' );
 }
 add_action( 'bp_include', 'profil_de_groupes_setup_cache_group' );
+
+/**
+ * Clears the Profil de Groupes caches when needed.
+ *
+ * @since  1.0.0
+ */
+function profil_de_groupes_clear_caches() {
+	$group_fields = wp_cache_get( 'group_fields', 'profil_de_groupes' );
+
+	if ( false !== $group_fields ) {
+		wp_cache_delete( 'group_fields', 'profil_de_groupes' );
+	}
+
+	$groups_profile = bp_xprofile_get_groups( array_merge( profil_de_groupes_get_loop_args(), array(
+		'fetch_fields' => true,
+	) ) );
+
+	$groups_profile = reset( $groups_profile );
+
+	foreach ( wp_list_pluck( $groups_profile->fields, 'name' ) as $name ) {
+		$key = sanitize_key( $name );
+		wp_cache_delete( $key, 'profil_de_groupes' );
+	}
+}
+add_action( 'profil_de_groupes_set_field_data', 'profil_de_groupes_clear_caches' );

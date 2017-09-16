@@ -23,15 +23,20 @@ class Profil_De_Groupes_Functions_Tests extends BP_UnitTestCase {
 		}
 	}
 
-	/**
-	 * @group cache
-	 */
+	// Dummy filter to test the cache
+	public function edit_wpdb_query( $query ) {
+		return "SHOW TABLES LIKE 'dummy'";
+	}
+
 	public function test_profil_de_groupes_set_field_data() {
 		profil_de_groupes_set_field_data( $this->fields['foo'], $this->groups['groupa'], 'foo' );
 
 		$this->assertTrue( 'foo' === profil_de_groupes_get_field_data( 'foo', $this->groups['groupa'] ) );
 	}
 
+	/**
+	 * @group cache
+	 */
 	public function test_cache_profil_de_groupes_get_field_data() {
 		foreach ( array_keys( $this->fields ) as $name ) {
 			profil_de_groupes_set_field_data(
@@ -68,5 +73,90 @@ class Profil_De_Groupes_Functions_Tests extends BP_UnitTestCase {
 		);
 
 		$this->assertSame( $bar_cache, $bar_expected );
+	}
+
+	/**
+	 * @group cache
+	 */
+	public function test_after_loop_cache_profil_de_groupes_get_field_data() {
+		foreach ( array_keys( $this->fields ) as $name ) {
+			profil_de_groupes_set_field_data(
+				$this->fields[ $name ],
+				$this->groups['groupa'],
+				$name
+			);
+
+			profil_de_groupes_set_field_data(
+				$this->fields[ $name ],
+				$this->groups['groupb'],
+				$name
+			);
+		}
+
+		global $group;
+		$pdg = profil_de_groupes();
+
+		$reset_group = $group;
+		$pdg->current_group_id = $this->groups['groupa'];
+
+		profil_de_groupes_has_profile();
+		while ( profil_de_groupes_profiles() ) {
+			profil_de_groupes_profile();
+		}
+
+		add_filter( 'query', array( $this, 'edit_wpdb_query' ), 20, 1 );
+
+		$dataa = profil_de_groupes_get_field_data( 'foo', $this->groups['groupa'] );
+		$datab = profil_de_groupes_get_field_data( 'foo', $this->groups['groupb'] );
+
+		remove_filter( 'query', array( $this, 'edit_wpdb_query' ), 20, 1 );
+
+		$foo_cache = wp_cache_get( 'foo', 'profil_de_groupes' );
+
+		$this->assertTrue( 'foo' === $foo_cache[ $this->groups['groupa'] ] );
+		$this->assertFalse( isset( $foo_cache[ $this->groups['groupb'] ] ) );
+
+		unset( $pdg->current_group_id );
+		$group = $reset_group;
+	}
+
+	/**
+	 * @group cache
+	 */
+	public function test_after_update_cache_profil_de_groupes_get_field_data() {
+		foreach ( array_keys( $this->fields ) as $name ) {
+			profil_de_groupes_set_field_data(
+				$this->fields[ $name ],
+				$this->groups['groupb'],
+				$name
+			);
+		}
+
+		global $group;
+		$pdg = profil_de_groupes();
+
+		$reset_group = $group;
+		$pdg->current_group_id = $this->groups['groupb'];
+
+		profil_de_groupes_has_profile();
+		while ( profil_de_groupes_profiles() ) {
+			profil_de_groupes_profile();
+		}
+
+		$datal = wp_filter_object_list( $group->fields, array(), 'and', 'data' );
+		$datab = profil_de_groupes_get_field_data( array( 'foo', 'bar' ), $this->groups['groupb'] );
+
+		profil_de_groupes_set_field_data(
+			$this->fields['foo'],
+			$this->groups['groupb'],
+			'updated'
+		);
+
+		$caches = array( wp_cache_get( 'group_fields', 'profil_de_groupes' ), wp_cache_get( 'foo', 'profil_de_groupes' ) );
+
+		$this->assertEmpty( array_filter( $caches ) );
+
+		unset( $pdg->current_group_id );
+		$group = $reset_group;
 	}
 }
