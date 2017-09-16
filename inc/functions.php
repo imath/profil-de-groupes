@@ -427,7 +427,9 @@ function profil_de_groupes_get_field_data( $names = '', $group_id = 0 ) {
 			}
 		}
 
-		$data = array_merge( $data, $db_data );
+		if ( is_array( $db_data ) ) {
+			$data = array_merge( $data, $db_data );
+		}
 	}
 
 	if ( ! $data ) {
