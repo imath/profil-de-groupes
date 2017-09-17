@@ -43,28 +43,37 @@ function profil_de_groupes_admin_is_install( $db_version = null ) {
 }
 
 /**
+ * Gets the main Profile group properties
+ *
+ * @since  1.0.0
+ *
+ * @return array The main Profile group properties.
+ */
+function profil_de_groupes_admin_get_group_properties() {
+	return array(
+		'name'        => 'profil_de_groupes',
+		'description' => __( 'Liste des champs de profil pour les Groupes', 'profil-de-groupes' ),
+		'can_delete'  => false,
+	);
+}
+
+/**
  * Install or upgrade the plugin.
  *
  * @since  1.0.0
  */
 function profil_de_groupes_admin_updater() {
-	$db_version = bp_get_option( '_profil_de_groupes_version', 0 );
+	$db_version   = bp_get_option( '_profil_de_groupes_version', 0 );
+	$version_bump = false;
 
-	if ( ! profil_de_groupes_admin_is_upgrade( $db_version ) && ! profil_de_groupes_admin_is_install( $db_version ) ) {
-		return;
-	}
-
+	// It's the first time the plugin is activated.
 	if ( profil_de_groupes_admin_is_install( $db_version ) ) {
 		// Avoid duplicates!
 		if ( bp_get_option( '_profil_de_groupes_id', 0 ) ) {
 			return;
 		}
 
-		$fields_group = xprofile_insert_field_group( array(
-			'name'        => 'profil_de_groupes',
-			'description' => __( 'Liste des champs de profil pour les Groupes', 'profil-de-groupes' ),
-			'can_delete'  => false,
-		) );
+		$fields_group = xprofile_insert_field_group( profil_de_groupes_admin_get_group_properties() );
 
 		if ( $fields_group ) {
 			global $wpdb;
@@ -87,6 +96,8 @@ function profil_de_groupes_admin_updater() {
 			bp_update_option( '_profil_de_groupes_id', $fields_group );
 		}
 
+		$version_bump = true;
+
 		/**
 		 * Trigger the 'profil_de_groupes_install' action.
 		 *
@@ -94,17 +105,30 @@ function profil_de_groupes_admin_updater() {
 		 */
 		do_action( 'profil_de_groupes_install' );
 
+	// The plugin needs an upgrade.
 	} elseif ( profil_de_groupes_admin_is_upgrade( $db_version ) ) {
+		$version_bump = true;
+
 		/**
 		 * Trigger the 'profil_de_groupes' action.
 		 *
 		 * @since 1.0.0
 		 */
-		do_action( 'profil_de_groupes', $db_version );
+		do_action( 'profil_de_groupes_upgrade', $db_version );
+
+	// The plugin was deactivated and needs the main Profile group to be restored.
+	} elseif ( ! xprofile_get_field_group( profil_de_groupes_get_fields_group() ) ) {
+		global $wpdb;
+
+		$wpdb->insert( buddypress()->profile->table_name_groups, array_merge( array(
+			'id' => profil_de_groupes_get_fields_group(),
+		), profil_de_groupes_admin_get_group_properties() ) );
 	}
 
 	// Update the db version.
-	bp_update_option( '_profil_de_groupes_version', profil_de_groupes()->version );
+	if ( $version_bump  ) {
+		bp_update_option( '_profil_de_groupes_version', profil_de_groupes()->version );
+	}
 }
 add_action( 'bp_admin_init', 'profil_de_groupes_admin_updater', 1050 );
 
@@ -168,7 +192,7 @@ function profil_de_groupes_load_admin() {
  * @since 1.0.0
  */
 function profil_de_groupes_admin() {
-	if ( ! profil_de_groupes()->fields_group ) {
+	if ( ! xprofile_get_field_group( profil_de_groupes_get_fields_group() ) ) {
 		printf( '<h1>%1$s</h1><div id="message" class="error notice is-dismissible"><p>%2$s</p></div>',
 			esc_html__( 'Erreur', 'profil-de-groupes' ),
 			esc_html__( 'L\'installation a échoué.', 'profil-de-groupes' )
@@ -305,3 +329,25 @@ function profil_de_groupes_admin_removable_query_args( $rqa = array() ) {
 	return $rqa;
 }
 add_filter( 'removable_query_args', 'profil_de_groupes_admin_removable_query_args', 10, 1 );
+
+/**
+ * Deletes the main Profile Group of fields.
+ *
+ * This is needed to avoid the group of fields to appear
+ * in user xProfile once the plugin is deactivated.
+ *
+ * @since 1.0.0
+ */
+function profil_de_groupes_admin_deactivation() {
+	global $wpdb;
+	$bp = buddypress();
+
+	$wpdb->query( $wpdb->prepare(
+		"DELETE FROM {$bp->profile->table_name_groups} WHERE id = %d",
+		profil_de_groupes_get_fields_group()
+	) );
+}
+add_action(
+	'deactivate_' . plugin_basename( dirname( dirname( __FILE__ ) ) ) . '/profil-de-groupes.php',
+	'profil_de_groupes_admin_deactivation'
+);
