@@ -3,8 +3,8 @@
  * Plugin Name: Profil de Groupes
  * Plugin URI: https://github.com/imath/profil-de-groupes/
  * Description: Un profil pour les groupes BuddyPress.
- * Version: 1.0.0-alpha
- * Requires at least: 4.9
+ * Version: 1.0.0
+ * Requires at least: 4.8
  * Tested up to: 4.9
  * License: GPLv2 or later
  * Author: imath
@@ -66,7 +66,7 @@ final class Profil_De_Groupes {
 	 */
 	private function globals() {
 		// Version
-		$this->version = '1.0.0-alpha';
+		$this->version = '1.0.0';
 
 		// Domain
 		$this->domain = 'profil-de-groupes';
@@ -94,6 +94,15 @@ final class Profil_De_Groupes {
 	private function inc() {
 		if ( ! bp_is_active( 'groups' ) || ! bp_is_active( 'xprofile' ) ) {
 			return;
+		}
+
+		/**
+		 * The BuddyPress Class autoload doesn't load the group extension
+		 * when no groups were created yet. We need to make sure to avoid
+		 * a fatal to happen by instanciating a dummy Group Extension.
+		 */
+		if ( ! class_exists( 'BP_Group_Extension' ) ) {
+			$dummy_group_extension = new BP_Group_Extension;
 		}
 
 		spl_autoload_register( array( $this, 'autoload' ) );

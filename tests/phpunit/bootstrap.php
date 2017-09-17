@@ -15,8 +15,6 @@ function _bootstrap_profil_de_groupes() {
 	// Make sure BP is installed and loaded first
 	require BP_TESTS_DIR . '/includes/loader.php';
 
-	$dummy = new BP_Group_Extension;
-
 	echo "Loading Profile de Groupes...\n";
 
 	// load WP Idea Stream
