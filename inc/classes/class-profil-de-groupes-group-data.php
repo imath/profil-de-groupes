@@ -77,7 +77,6 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 	 */
 	public function populate( $field_id, $user_id ) {}
 	public static function get_last_updated( $user_id ) {}
-	public static function delete_data_for_user( $user_id ) {}
 	public static function get_random( $user_id, $exclude_fullname ) {}
 	public static function get_fullname( $user_id = 0 ) {}
 	public static function get_data_for_user( $user_id, $field_ids ) {}
@@ -227,6 +226,46 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Delete all Group's profile data.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  integer $user_id The Group ID.
+	 * @return boolean          True on success. False otherwise.
+	 */
+	public static function delete_data_for_user( $user_id ) {
+		global $wpdb;
+
+		$group_id = $user_id;
+
+		if ( ! $group_id ) {
+			return false;
+		}
+
+		// Gets the BuddyPress main instance.
+		$bp = buddypress();
+
+		// Stores the original xProlile table name.
+		$tb_name_reset = $bp->profile->table_name_data;
+
+		// Override the xProfile
+		$bp->profile->table_name_data = sprintf( '%sprofil_de_groupes_data', $wpdb->base_prefix );
+
+		// Temporarly filters the query.
+		add_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
+
+		$deleted = (bool) parent::delete_data_for_user( $group_id );
+
+		// Removes the temporary filter on the query.
+		remove_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
+
+		// Restores the xProlile table name.
+		$bp->profile->table_name_data = $tb_name_reset;
+
+		return $deleted;
 	}
 
 	/**

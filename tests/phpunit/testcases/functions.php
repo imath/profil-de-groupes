@@ -208,4 +208,42 @@ class Profil_De_Groupes_Functions_Tests extends BP_UnitTestCase {
 		$group = $reset_group;
 		set_current_screen( 'front' );
 	}
+
+	/**
+	 * @group cache
+	 */
+	public function test_after_deleted_group_field_profil_de_groupes_fields_data_caches() {
+		$g = $this->factory->group->create();
+
+		foreach ( array_keys( $this->fields ) as $name ) {
+			profil_de_groupes_set_field_data(
+				$this->fields[ $name ],
+				$g,
+				$name
+			);
+		}
+
+		global $group;
+		$pdg = profil_de_groupes();
+
+		$reset_group = $group;
+		$pdg->current_group_id = $g;
+
+		profil_de_groupes_has_profile();
+		while ( profil_de_groupes_profiles() ) {
+			profil_de_groupes_profile();
+		}
+
+		$datal = wp_filter_object_list( $group->fields, array(), 'and', 'data' );
+		$datab = profil_de_groupes_get_field_data( array( 'bar' ), $g );
+
+		groups_delete_group( $g );
+
+		$caches = array( wp_cache_get( 'group_fields', 'profil_de_groupes' ), wp_cache_get( 'bar', 'profil_de_groupes' ) );
+
+		$this->assertEmpty( array_filter( $caches ) );
+
+		unset( $pdg->current_group_id );
+		$group = $reset_group;
+	}
 }

@@ -220,6 +220,35 @@ function profil_de_groupes_fetch_fields_data( $group_id = 0 ) {
 }
 
 /**
+ * Deletes fields data for a Group.
+ *
+ * @since  1.0.0
+ *
+ * @param  integer $group_id The deleted Group ID.
+ * @return boolean $deleted  True on success. False otherwise.
+ */
+function profil_de_groupes_delete_fields_data( $group_id = 0 ) {
+	if ( ! $group_id ) {
+		$group_id = bp_get_current_group_id();
+	}
+
+	$deleted = Profil_De_Groupes_Group_Data::delete_data_for_user( $group_id );
+
+	/**
+	 * Fires when fields data for a Group has been deleted.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  boolean $deleted  True on success. False otherwise.
+	 * @param  integer $group_id The deleted Group ID.
+	 */
+	do_action( 'profil_de_groupes_delete_fields_data', $deleted, $group_id );
+
+	return $deleted;
+}
+add_action( 'groups_delete_group', 'profil_de_groupes_delete_fields_data', 10, 1 );
+
+/**
  * Set the selected option/checked value in field containing options.
  *
  * @since 1.0.0
@@ -498,7 +527,8 @@ function profil_de_groupes_clear_caches() {
 		wp_cache_delete( $key, 'profil_de_groupes' );
 	}
 }
-add_action( 'profil_de_groupes_set_field_data', 'profil_de_groupes_clear_caches' );
+add_action( 'profil_de_groupes_set_field_data',     'profil_de_groupes_clear_caches' );
+add_action( 'profil_de_groupes_delete_fields_data', 'profil_de_groupes_clear_caches' );
 
 /**
  * Clears the Field's name cache.
