@@ -123,7 +123,7 @@ class Profil_De_Groupes_Functions_Tests extends BP_UnitTestCase {
 	/**
 	 * @group cache
 	 */
-	public function test_after_update_cache_profil_de_groupes_get_field_data() {
+	public function test_after_update_profil_de_groupes_fields_data_caches() {
 		foreach ( array_keys( $this->fields ) as $name ) {
 			profil_de_groupes_set_field_data(
 				$this->fields[ $name ],
@@ -158,5 +158,54 @@ class Profil_De_Groupes_Functions_Tests extends BP_UnitTestCase {
 
 		unset( $pdg->current_group_id );
 		$group = $reset_group;
+	}
+
+	/**
+	 * @group cache
+	 */
+	public function test_after_deleted_field_profil_de_groupes_fields_data_caches() {
+		set_current_screen( 'groups_bp-profile-setup-groupe' );
+
+		$this->fields['new'] = $this->factory->xprofile_field->create( array(
+			'field_group_id' => profil_de_groupes_get_fields_group(),
+			'name'           => 'new',
+		) );
+
+		foreach ( array_keys( $this->fields ) as $name ) {
+			profil_de_groupes_set_field_data(
+				$this->fields[ $name ],
+				$this->groups['groupa'],
+				$name
+			);
+		}
+
+		global $group;
+		$pdg = profil_de_groupes();
+
+		$reset_group = $group;
+		$pdg->current_group_id = $this->groups['groupa'];
+
+		profil_de_groupes_has_profile();
+		while ( profil_de_groupes_profiles() ) {
+			profil_de_groupes_profile();
+		}
+
+		$datal = wp_filter_object_list( $group->fields, array(), 'and', 'data' );
+		$datab = profil_de_groupes_get_field_data( array( 'foo', 'bar', 'new' ), $this->groups['groupa'] );
+
+		// Simulate the delete_field admin mode
+		$field = xprofile_get_field( $this->fields['new'] );
+		xprofile_delete_field( $this->fields['new'] );
+		add_action( 'xprofile_fields_deleted_field', 'profil_de_groupes_admin_delete_field_data', 10, 1 );
+		do_action( 'xprofile_fields_deleted_field', $field );
+
+
+		$caches = array( wp_cache_get( 'group_fields', 'profil_de_groupes' ), wp_cache_get( 'new', 'profil_de_groupes' ) );
+
+		$this->assertEmpty( array_filter( $caches ) );
+
+		unset( $pdg->current_group_id );
+		$group = $reset_group;
+		set_current_screen( 'front' );
 	}
 }

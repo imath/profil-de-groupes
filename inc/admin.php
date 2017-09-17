@@ -63,6 +63,7 @@ function profil_de_groupes_admin_updater() {
 		$fields_group = xprofile_insert_field_group( array(
 			'name'        => 'profil_de_groupes',
 			'description' => __( 'Liste des champs de profil pour les Groupes', 'profil-de-groupes' ),
+			'can_delete'  => false,
 		) );
 
 		if ( $fields_group ) {
@@ -189,6 +190,9 @@ function profil_de_groupes_admin() {
 
 	// Leave BuddyPress manage other cases.
 	} else {
+		// When a field is deleted, make sure the corresponding data is too.
+		add_action( 'xprofile_fields_deleted_field', 'profil_de_groupes_admin_delete_field_data', 10, 1 );
+
 		xprofile_admin();
 	}
 }
@@ -215,6 +219,34 @@ function profil_de_groupes_admin_check_duplicates( $field_name = '' ) {
 		$field_name,
 		profil_de_groupes()->fields_group
 	) );
+}
+
+/**
+ * Deletes field's data when it has been deleted.
+ *
+ * @since  1.0.0
+ *
+ * @param  BP_XProfile_Field $field   The deleted field object.
+ * @param  boolean           $deleted True if corresponding data is deleted, false otherwise.
+ */
+function profil_de_groupes_admin_delete_field_data( BP_XProfile_Field $field ) {
+	if ( empty( $field->id ) ) {
+		return;
+	}
+
+	$deleted = Profil_De_Groupes_Group_Data::delete_for_field( $field->id );
+
+	/**
+	 * Fires once the Groups profile field has been deleted.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  BP_XProfile_Field $field   The deleted field object.
+	 * @param  boolean           $deleted True if corresponding data is deleted, false otherwise.
+	 */
+	do_action( 'profil_de_groupes_deleted_field', $field, $deleted );
+
+	return $deleted;
 }
 
 /**
