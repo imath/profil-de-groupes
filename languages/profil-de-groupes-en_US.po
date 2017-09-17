@@ -1,0 +1,96 @@
+# Copyright (C) 2017 imath
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Profil de Groupes 1.0.0-alpha\n"
+"Report-Msgid-Bugs-To: https://github.com/imath/profil-de-groupes/issues\n"
+"POT-Creation-Date: 2017-09-17 12:24:14+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-09-17 14:32+0100\n"
+"Last-Translator: imath <mathchristo@yahoo.fr>\n"
+"Language-Team: FRENCH <contact@imathi.eu>\n"
+"X-Generator: Poedit 1.7.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_US\n"
+
+#: inc/admin.php:55
+msgid "Liste des champs de profil pour les Groupes"
+msgstr "Profile fields for Groups"
+
+#: inc/admin.php:197
+msgid "Erreur"
+msgstr "Error"
+
+#: inc/admin.php:198
+msgid "L'installation a échoué."
+msgstr "Installation failed."
+
+#: inc/admin.php:209
+msgid "Il est impératif que le nom des champs soient uniques."
+msgstr "Unique names for fields are required."
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:35
+msgid "A propos de nous"
+msgstr "About us"
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:73
+msgid "Une erreur est survenue, merci de contacter l'administrateur de ce site"
+msgstr "An error occurred, please contact the site administrator"
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:167
+msgid "Certains champs requis sont manquants. Merci de les définir."
+msgstr "Some required fields are missing. Please make sure to define them."
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:208
+msgid ""
+"Des erreurs sont survenues lors de la mise à jour des champs de profil du "
+"groupe."
+msgstr "Errors occurred while updating the group's profile fields."
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:213
+msgid "Profil mis à jour avec succès."
+msgstr "Profile successfully updated."
+
+#: templates/groups/single/profil-du-groupe.php:51
+msgid ""
+"Ce groupe n'a pas encore publié ses informations de profil, repassez un peu "
+"plus tard !"
+msgstr ""
+"This group has not published profile information yet, come back later !"
+
+#. Plugin Name of the plugin/theme
+msgid "Profil de Groupes"
+msgstr "Groups Profiles"
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/imath/profil-de-groupes/"
+msgstr "https://github.com/imath/profil-de-groupes/"
+
+#. Description of the plugin/theme
+msgid "Un profil pour les groupes BuddyPress."
+msgstr "Profile fields for your BuddyPress groups."
+
+#. Author of the plugin/theme
+msgid "imath"
+msgstr "imath"
+
+#. Author URI of the plugin/theme
+msgid "https://imathi.eu/"
+msgstr "https://imathi.eu/"
+
+#: inc/admin.php:149
+msgctxt "admin page title"
+msgid "Champs de profil des groupes"
+msgstr "Groups Profile fields"
+
+#: inc/admin.php:150
+msgctxt "admin menu title"
+msgid "Champs de profil"
+msgstr "Profile fields"
+
+#: inc/functions.php:89
+msgctxt "Group Profile slug"
+msgid "a-propos"
+msgstr "about"

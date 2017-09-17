@@ -11,6 +11,34 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Load translations.
+ *
+ * @since 1.0.0
+ */
+function profil_de_groupes_load_textdomain() {
+	// Get plugin's intance.
+	$pdg = profil_de_groupes();
+
+	// Traditional WordPress plugin locale filter
+	$locale = apply_filters( 'plugin_locale', get_locale(), $pdg->domain );
+	$mofile = sprintf( '%1$s-%2$s.mo', $pdg->domain, $locale );
+
+	// Setup paths to current locale file
+	$mofile_local  = $pdg->lang_dir . $mofile;
+	$mofile_global = WP_LANG_DIR . '/profil-de-groupes/' . $mofile;
+
+	// Look in global /wp-content/languages/profil-de-groupes folder
+	load_textdomain( $pdg->domain, $mofile_global );
+
+	// Look in local /wp-content/plugins/profil-de-groupes/languages/ folder
+	load_textdomain( $pdg->domain, $mofile_local );
+
+	// Look in global /wp-content/languages/plugins/
+	load_plugin_textdomain( $pdg->domain );
+}
+add_action( 'bp_include', 'profil_de_groupes_load_textdomain', 10 );
+
+/**
  * Gets the Groups group of fields ID.
  *
  * @since  1.0.0

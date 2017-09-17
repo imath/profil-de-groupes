@@ -1,0 +1,36 @@
+{
+  "author": "imath",
+  "bugs": {
+    "url": "https://github.com/imath/profil-de-groupes/issues"
+  },
+  "description": "Profile fields for your BuddyPress groups.",
+  "devDependencies": {
+    "grunt": "~1.0.1",
+    "grunt-checktextdomain": "~1.0.1",
+    "grunt-contrib-copy": "~1.0.0",
+    "grunt-contrib-watch": "~1.0.0",
+    "grunt-exec": "~1.0.1",
+    "grunt-check-dependencies": "~0.12.0",
+    "grunt-legacy-util": "^1.0.0",
+    "grunt-wp-i18n": "~0.5.4",
+    "matchdep": "~1.0.1",
+    "grunt-git-archive": "~0.0.3"
+  },
+  "engines": {
+    "node": "~6.6.0"
+  },
+  "keywords": [
+    "buddypress",
+    "groups",
+    "profile",
+    "fields"
+  ],
+  "homepage": "https://imathi.eu/tag/profil-de-groupes",
+  "license": "GPL-2.0+",
+  "name": "profil-de-groupes",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imath/profil-de-groupes.git"
+  },
+  "version": "1.0.0-beta"
+}

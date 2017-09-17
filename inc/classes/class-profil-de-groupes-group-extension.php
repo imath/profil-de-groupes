@@ -32,7 +32,7 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 
 		parent::init(  array(
 			'slug'              => profil_de_groupes_get_slug(),
-			'name'              => __( 'A propos de nous', 'altctrl-public-group' ),
+			'name'              => __( 'A propos de nous', 'profil-de-groupes' ),
 			'visibility'        => $visibility,
 			'nav_item_position' => 14,
 			'enable_nav_item'   => true,

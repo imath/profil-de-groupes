@@ -1,0 +1,93 @@
+# Copyright (C) 2017 imath
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Profil de Groupes 1.0.0-alpha\n"
+"Report-Msgid-Bugs-To: https://github.com/imath/profil-de-groupes/issues\n"
+"POT-Creation-Date: 2017-09-17 12:24:14+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"Last-Translator: imath <contact@imathi.eu>\n"
+"Language-Team: FRENCH <contact@imathi.eu>\n"
+"X-Generator: grunt-wp-i18n 0.5.4\n"
+
+#: inc/admin.php:55
+msgid "Liste des champs de profil pour les Groupes"
+msgstr ""
+
+#: inc/admin.php:197
+msgid "Erreur"
+msgstr ""
+
+#: inc/admin.php:198
+msgid "L'installation a échoué."
+msgstr ""
+
+#: inc/admin.php:209
+msgid "Il est impératif que le nom des champs soient uniques."
+msgstr ""
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:35
+msgid "A propos de nous"
+msgstr ""
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:73
+msgid "Une erreur est survenue, merci de contacter l'administrateur de ce site"
+msgstr ""
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:167
+msgid "Certains champs requis sont manquants. Merci de les définir."
+msgstr ""
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:208
+msgid ""
+"Des erreurs sont survenues lors de la mise à jour des champs de profil du "
+"groupe."
+msgstr ""
+
+#: inc/classes/class-profil-de-groupes-group-extension.php:213
+msgid "Profil mis à jour avec succès."
+msgstr ""
+
+#: templates/groups/single/profil-du-groupe.php:51
+msgid ""
+"Ce groupe n'a pas encore publié ses informations de profil, repassez un peu "
+"plus tard !"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Profil de Groupes"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/imath/profil-de-groupes/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Un profil pour les groupes BuddyPress."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "imath"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://imathi.eu/"
+msgstr ""
+
+#: inc/admin.php:149
+msgctxt "admin page title"
+msgid "Champs de profil des groupes"
+msgstr ""
+
+#: inc/admin.php:150
+msgctxt "admin menu title"
+msgid "Champs de profil"
+msgstr ""
+
+#: inc/functions.php:89
+msgctxt "Group Profile slug"
+msgid "a-propos"
+msgstr ""

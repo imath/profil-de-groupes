@@ -78,8 +78,7 @@ final class Profil_De_Groupes {
 		// Path and URL
 		$this->dir        = plugin_dir_path( $this->file );
 		$this->url        = plugin_dir_url ( $this->file );
-		$this->js_url     = trailingslashit( $this->url . 'js' );
-		$this->assets_url = trailingslashit( $this->url . 'assets' );
+		$this->lang_dir   = trailingslashit( $this->dir . 'languages' );
 		$this->inc_dir    = trailingslashit( $this->dir . 'inc' );
 		$this->tpl_dir    = trailingslashit( $this->dir . 'templates' );
 
