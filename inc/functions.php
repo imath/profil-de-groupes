@@ -230,7 +230,11 @@ function profil_de_groupes_fetch_fields_data( $group_id = 0 ) {
 		$group_fields[ $group_id ] = array();
 
 		foreach( $d as $f ) {
-			$group_fields[ $group_id ][ $f->field_id] = $f;
+			if ( empty(  $f->field_id ) ) {
+				continue;
+			}
+
+			$group_fields[ $group_id ][ $f->field_id ] = $f;
 		}
 
 		wp_cache_set( 'group_fields', $group_fields, 'profil_de_groupes' );
