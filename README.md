@@ -1,4 +1,4 @@
-# Entrepôt
+# Profil de Groupes
 
 ## Français 🇫🇷
 *Enrichissez vos groupes BuddyPress d'une page de profil.*
