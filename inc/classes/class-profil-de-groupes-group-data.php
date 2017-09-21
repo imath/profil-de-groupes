@@ -142,10 +142,10 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 			'value'        => '',
 		);
 
-		$d = wp_parse_args(
+		$d = apply_filters( 'profil_de_groupes_group_data_save', wp_parse_args(
 			array_intersect_key( get_object_vars( $this ), $defaults ),
 			array_merge( $defaults, array( 'last_updated' => bp_core_current_time() ) )
-		);
+		) );
 
 		$exists = $this->exists();
 
