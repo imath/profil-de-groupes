@@ -2,18 +2,18 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Profil de Groupes 1.0.0-alpha\n"
+"Project-Id-Version: Profil de Groupes 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/imath/profil-de-groupes/issues\n"
-"POT-Creation-Date: 2017-09-17 12:24:14+00:00\n"
+"POT-Creation-Date: 2017-10-31 03:02:20+00:00\n"
+"PO-Revision-Date: 2017-10-31 04:03+0100\n"
+"Last-Translator: imath <mathchristo@yahoo.fr>\n"
+"Language-Team: FRENCH <contact@imathi.eu>\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-09-17 14:32+0100\n"
-"Last-Translator: imath <mathchristo@yahoo.fr>\n"
-"Language-Team: FRENCH <contact@imathi.eu>\n"
 "X-Generator: Poedit 1.7.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: en_US\n"
 
 #: inc/admin.php:55
 msgid "Liste des champs de profil pour les Groupes"
@@ -90,7 +90,7 @@ msgctxt "admin menu title"
 msgid "Champs de profil"
 msgstr "Profile fields"
 
-#: inc/functions.php:89
+#: inc/functions.php:117
 msgctxt "Group Profile slug"
 msgid "a-propos"
 msgstr "about"

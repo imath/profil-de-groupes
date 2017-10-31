@@ -81,7 +81,7 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask( 'compress', ['git-archive'] );
 
-	grunt.registerTask( 'release', ['checktextdomain', 'makepot', 'phpunit', 'compress'] );
+	grunt.registerTask( 'release', ['checktextdomain', 'makepot', 'phpunit'] );
 
 	// Default task.
 	grunt.registerTask( 'default', ['checktextdomain'] );

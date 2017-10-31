@@ -3,7 +3,7 @@
  * Plugin Name: Profil de Groupes
  * Plugin URI: https://github.com/imath/profil-de-groupes/
  * Description: Un profil pour les groupes BuddyPress.
- * Version: 1.0.1-alpha
+ * Version: 1.0.1
  * Requires at least: 4.8
  * Tested up to: 4.9
  * License: GPLv2 or later
@@ -66,7 +66,7 @@ final class Profil_De_Groupes {
 	 */
 	private function globals() {
 		// Version
-		$this->version = '1.0.1-alpha';
+		$this->version = '1.0.1';
 
 		// Domain
 		$this->domain = 'profil-de-groupes';
