@@ -58,6 +58,30 @@ function profil_de_groupes_admin_get_group_properties() {
 }
 
 /**
+ * Create the Groups Profile data DB table.
+ *
+ * @since 1.1.0
+ */
+function profil_de_groupe_admin_create_table() {
+	global $wpdb;
+
+	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+	dbDelta( array(
+		"CREATE TABLE {$wpdb->base_prefix}profil_de_groupes_data (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			field_id bigint(20) unsigned NOT NULL,
+			group_id bigint(20) unsigned NOT NULL,
+			user_id tinyint(1) DEFAULT '0',
+			value longtext NOT NULL,
+			last_updated datetime NOT NULL,
+			KEY field_id (field_id),
+			KEY group_id (group_id)
+		) {$wpdb->get_charset_collate()};"
+	) );
+}
+
+/**
  * Install or upgrade the plugin.
  *
  * @since  1.0.0
@@ -76,21 +100,7 @@ function profil_de_groupes_admin_updater() {
 		$fields_group = xprofile_insert_field_group( profil_de_groupes_admin_get_group_properties() );
 
 		if ( $fields_group ) {
-			global $wpdb;
-
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-			dbDelta( array(
-				"CREATE TABLE {$wpdb->base_prefix}profil_de_groupes_data (
-					id bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-					field_id bigint(20) unsigned NOT NULL,
-					group_id bigint(20) unsigned NOT NULL,
-					value longtext NOT NULL,
-					last_updated datetime NOT NULL,
-					KEY field_id (field_id),
-					KEY group_id (group_id)
-				) {$wpdb->get_charset_collate()};"
-			) );
+			profil_de_groupe_admin_create_table();
 
 			// Set the Group profiles option.
 			bp_update_option( '_profil_de_groupes_id', $fields_group );
@@ -108,6 +118,10 @@ function profil_de_groupes_admin_updater() {
 	// The plugin needs an upgrade.
 	} elseif ( profil_de_groupes_admin_is_upgrade( $db_version ) ) {
 		$version_bump = true;
+
+		if ( version_compare( '1.1.0', profil_de_groupes()->version, '=' ) ) {
+			profil_de_groupe_admin_create_table();
+		}
 
 		/**
 		 * Trigger the 'profil_de_groupes' action.
@@ -293,6 +307,9 @@ function profil_de_groupes_admin_js() {
 			$( \'#add_group\' ).remove();
 			$( \'#field-group-tabs\' ).remove();
 
+			// WordPress user fields don\'t make sense here.
+			$( \'#fieldtype option[value="wp-biography"]\').closest( \'optgroup\' ).remove();
+
 			$.each( $( \'.tab-toolbar-left\' ).children(), function( i, a ) {
 				if ( ! $( a ).hasClass( \'button-primary\' ) ) {
 					$( a ).remove();
@@ -306,10 +323,11 @@ function profil_de_groupes_admin_js() {
 			if ( $( \'#bp-xprofile-add-field\' ).length ) {
 				$( \'#bp-xprofile-add-field\' ).prop( \'action\', $( \'#bp-xprofile-add-field\' ).prop( \'action\' ).replace( urlReplace, urlBy ) );
 
-				// Remove the member types, visibility & autolink metabox
+				// Remove the member types, visibility, autolink & signup metabox.
 				$(\'#member-type-none\' ).closest( \'.postbox\' ).remove();
 				$(\'#default-visibility\' ).closest( \'.postbox\' ).remove();
 				$(\'#do-autolink\' ).closest( \'.postbox\' ).remove();
+				$(\'#has-signup-position\' ).closest( \'.postbox\' ).remove();
 			}
 		} );
 	} )( jQuery )', esc_url_raw( $xprofile_admin_url ), esc_url_raw( $gprofile_admin_url ) ) );
