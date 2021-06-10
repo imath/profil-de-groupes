@@ -1,0 +1,31 @@
+{
+	"name": "imath/profil-de-groupes",
+	"description": "Profile fields for your BuddyPress groups.",
+	"type": "buddypress-plugin",
+	"keywords": [
+		"profile",
+		"groups"
+	],
+	"homepage": "https://buddypress.org",
+	"license": "GPL-2.0-or-later",
+	"authors": [ {
+		"name": "imath",
+		"homepage": "https://imathi.eu/"
+	} ],
+	"support": {
+		"issues": "https://github.com/imath/profil-de-groupes/issues",
+		"source": "https://github.com/imath/profil-de-groupes"
+	},
+	"require": {
+		"composer/installers": "^1.10.0",
+		"php": ">=5.6.0"
+	},
+	"require-dev": {
+		"phpcompatibility/phpcompatibility-wp": "^2.1.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+		"squizlabs/php_codesniffer" : "^3.5.4",
+		"wp-coding-standards/wpcs": "*",
+		"wp-phpunit/wp-phpunit": "^5.7",
+		"phpunit/phpunit": "^7.5"
+	}
+}
