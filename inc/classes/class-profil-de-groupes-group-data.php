@@ -54,6 +54,15 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 	public $value;
 
 	/**
+	 * Group ID used to override the user ID.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @var int $group_id
+	 */
+	public static $override_user_id;
+
+	/**
 	 * The constructor
 	 *
 	 * @since 1.0.0
@@ -79,7 +88,7 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 	public static function get_last_updated( $user_id ) {}
 	public static function get_random( $user_id, $exclude_fullname ) {}
 	public static function get_fullname( $user_id = 0 ) {}
-	public static function get_data_for_user( $user_id, $field_ids ) {}
+	public static function get_data_for_user( $user_id, $field_ids, $field_type_objects = array() ) {}
 	public static function get_all_for_user( $user_id ) {}
 	public static function get_fielddataid_byid( $field_id, $user_id ) {}
 	public static function get_value_byid( $field_id, $user_ids = null ) {}
@@ -229,6 +238,19 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 	}
 
 	/**
+	 * Override the $field_obj->user_id property to make sure field data are deleted whan a group is.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param object $field_obj The field object being deleted.
+	 */
+	public static function override_user_id( $field_obj ) {
+		if ( self::$override_user_id && isset( $field_obj->user_id ) && 0 === $field_obj->user_id ) {
+			$field_obj->user_id = self::$override_user_id;
+		}
+	}
+
+	/**
 	 * Delete all Group's profile data.
 	 *
 	 * @since  1.0.0
@@ -257,7 +279,13 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 		// Temporarly filters the query.
 		add_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
 
+		self::$override_user_id = $group_id;
+		add_action( 'xprofile_data_before_delete', array( __CLASS__, 'override_user_id' ), 10, 1 );
+
 		$deleted = (bool) parent::delete_data_for_user( $group_id );
+
+		add_action( 'xprofile_data_before_delete', array( __CLASS__, 'override_user_id' ), 10, 1 );
+		self::$override_user_id = 0;
 
 		// Removes the temporary filter on the query.
 		remove_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
@@ -304,7 +332,7 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 
 		$group_id = $user_id;
 
-		if ( ! $group_id ) {
+		if ( ! $group_id || empty( $fields ) ) {
 			return false;
 		}
 
@@ -314,21 +342,48 @@ class Profil_De_Groupes_Group_Data extends BP_XProfile_ProfileData {
 		// Stores the original xProlile table name.
 		$tb_name_reset = $bp->profile->table_name_data;
 
-		// Override the xProfile
-		$bp->profile->table_name_data = sprintf( '%sprofil_de_groupes_data', $wpdb->base_prefix );
+		// Use the Group xProfile table.
+		$table_name_data = sprintf( '%sprofil_de_groupes_data', $wpdb->base_prefix );
+		$field_sql       = '';
 
-		// Temporarly filters the query.
-		add_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
+		if ( is_array( $fields ) ) {
+			for ( $i = 0, $count = count( $fields ); $i < $count; ++$i ) {
+				if ( $i == 0 ) {
+					$field_sql .= $wpdb->prepare( "AND ( f.name = %s ", $fields[$i] );
+				} else {
+					$field_sql .= $wpdb->prepare( "OR f.name = %s ", $fields[$i] );
+				}
+			}
 
-		$field_values = parent::get_value_byfieldname( $fields, $group_id );
+			$field_sql .= ')';
+		} else {
+			$field_sql .= $wpdb->prepare( "AND f.name = %s", $fields );
+		}
 
-		// Removes the temporary filter on the query.
-		remove_filter( 'query', array( __CLASS__, 'edit_wpdb_query' ), 10, 1 );
+		$sql    = $wpdb->prepare( "SELECT d.value, f.name FROM {$table_name_data} d, {$bp->profile->table_name_fields} f WHERE d.field_id = f.id AND d.group_id = %d AND f.parent_id = 0 $field_sql", $group_id );
+		$values = $wpdb->get_results( $sql );
 
-		// Restores the xProlile table name.
-		$bp->profile->table_name_data = $tb_name_reset;
+		if ( empty( $values ) || is_wp_error( $values ) ) {
+			return false;
+		}
 
-		return $field_values;
+		$new_values = array();
+
+		if ( is_array( $fields ) ) {
+			for ( $i = 0, $count = count( $values ); $i < $count; ++$i ) {
+				for ( $j = 0; $j < count( $fields ); $j++ ) {
+					if ( $values[$i]->name == $fields[$j] ) {
+						$new_values[$fields[$j]] = $values[$i]->value;
+					} elseif ( !array_key_exists( $fields[$j], $new_values ) ) {
+						$new_values[$fields[$j]] = NULL;
+					}
+				}
+			}
+		} else {
+			$new_values = $values[0]->value;
+		}
+
+		return $new_values;
 	}
 }
 
