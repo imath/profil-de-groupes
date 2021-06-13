@@ -190,7 +190,21 @@ function profil_de_groupes_field_name() {
  * @since 1.0.0
  */
 function profil_de_groupes_field_data() {
+	global $field;
+	$has_filter = false;
+
+	if ( isset( $field->type_obj ) && $field->type_obj instanceof BP_XProfile_Field_Type_Checkbox_Acceptance ) {
+		remove_filter( 'bp_get_the_profile_field_value', 'xprofile_filter_format_field_value_by_type', 8, 3 );
+		add_filter( 'bp_get_the_profile_field_value', 'profil_de_groupes_display_checkbox_acceptance_field', 8, 3 );
+		$has_filter = true;
+	}
+
 	bp_the_profile_field_value();
+
+	if ( $has_filter ) {
+		add_filter( 'bp_get_the_profile_field_value', 'xprofile_filter_format_field_value_by_type', 8, 3 );
+		remove_filter( 'bp_get_the_profile_field_value', 'profil_de_groupes_display_checkbox_acceptance_field', 8, 3 );
+	}
 }
 
 /**

@@ -336,6 +336,79 @@ function profil_de_groupes_set_options_field( $output = '', $option = null, $fie
 }
 
 /**
+ * Override the checkbox acceptance edit output for Group's context.
+ *
+ * @since 1.1.0
+ *
+ * @param string $html     The HTML output.
+ * @param int    $field_id The field ID.
+ * @return string          The HTML output.
+ */
+function profil_de_groupes_set_checkbox_acceptance( $html, $field_id ) {
+	global $group;
+
+	if ( empty( $group->fields ) || empty( $field_id ) ) {
+		return $html;
+	}
+
+	$current_field = wp_filter_object_list( $group->fields, array( 'id' => $field_id ), 'and' );
+	$current_field = reset( $current_field );
+
+	if ( ! isset( $current_field->data->value ) ) {
+		return $html;
+	}
+
+	$checkbox_acceptance = (int) maybe_unserialize( $current_field->data->value );
+
+	if ( ! empty( $_POST[ 'field_' . $field_id ] ) ) {
+		$new_checkbox_acceptance = (int) wp_unslash( $_POST[ 'field_' . $field_id ] );
+
+		if ( $checkbox_acceptance !== $new_checkbox_acceptance ) {
+			$checkbox_acceptance = $new_checkbox_acceptance;
+		}
+	}
+
+	$r = array(
+		'type'  => 'checkbox',
+		'name'  => bp_get_the_profile_field_input_name(),
+		'id'    => bp_get_the_profile_field_input_name(),
+		'value' => 1,
+		'class' => 'checkbox-acceptance',
+	);
+
+	if ( bp_get_the_profile_field_is_required() ) {
+		$r['required'] = 'required'; // HTML5 required attribute.
+	}
+
+	if ( 1 === $checkbox_acceptance ) {
+		$r['checked']  = 'checked';
+		$r['readonly'] = 'readonly';
+		$r['onclick']  = 'return false;';
+	}
+
+	$page_id = bp_xprofile_get_meta( $field_id, 'field', 'bp_xprofile_checkbox_acceptance_page', true );
+	$page    = null;
+
+	if ( $page_id ) {
+		$page = get_post( $page_id );
+	}
+
+	if ( $page instanceof WP_Post ) {
+		$html = sprintf(
+			'<div class="bp-xprofile-checkbox-acceptance-field"><input %1$s />%2$s</div>',
+			bp_get_form_field_attributes( sanitize_key( bp_get_the_profile_field_name() ), $r ),
+			sprintf(
+				/* translators: %s: link to the page the user needs to accept the terms of. */
+				esc_html__( 'Ce groupe est en accord avec %s.', 'profil-de-groupes' ),
+				'<a href="' . esc_url( get_permalink( $page ) ) . '">' . esc_html( get_the_title( $page ) ) . '</a>'
+			)
+		);
+	}
+
+	return $html;
+}
+
+/**
  * Set the selected options for the date field.
  *
  * @since 1.0.0
@@ -410,6 +483,9 @@ function profil_de_groupes_add_field_filters() {
 
 	// This one is particular
 	add_filter( 'bp_get_the_profile_field_datebox', 'profil_de_groupes_set_options_date', 10, 7 );
+
+	// The checkbox Acceptance field was added in BuddyPress 8.0.0.
+	add_filter( 'bp_get_the_profile_field_checkbox_acceptance', 'profil_de_groupes_set_checkbox_acceptance', 10, 3 );
 }
 
 /**
@@ -427,6 +503,46 @@ function profil_de_groupes_remove_field_filters() {
 
 	// This one is particular
 	remove_filter( 'bp_get_the_profile_field_datebox', 'profil_de_groupes_set_options_date', 10, 7 );
+
+	// The checkbox Acceptance field was added in BuddyPress 8.0.0.
+	remove_filter( 'bp_get_the_profile_field_checkbox_acceptance', 'profil_de_groupes_set_checkbox_acceptance', 10, 3 );
+}
+
+/**
+ * Display the checkbox acceptance field for the Group's context.
+ *
+ * @since 1.1.0
+ *
+ * @param mixed      $field_value Field value.
+ * @param string     $field_type  Field type.
+ * @param string|int $field_id    Optional. ID of the field.
+ * @return string                 The HTML output.
+ */
+function profil_de_groupes_display_checkbox_acceptance_field( $field_value, $field_type = '', $field_id = '' ) {
+	$page_id = bp_xprofile_get_meta( $field_id, 'field', 'bp_xprofile_checkbox_acceptance_page', true );
+	$page    = null;
+	$html    = '';
+
+	/* translators: %s: link to the page the user needs to accept the terms of. */
+	$acceptance_text = esc_html__( 'Ce groupe n’est pas en accord avec %s.', 'profil-de-groupes' );
+
+	if ( $page_id ) {
+		$page = get_post( $page_id );
+	}
+
+	if ( ! empty( $field_value ) ) {
+		/* translators: %s: link to the page the user needs to accept the terms of. */
+		$acceptance_text = esc_html__( 'Ce groupe est en accord avec %s.', 'profil-de-groupes' );
+	}
+
+	if ( $page instanceof WP_Post ) {
+		$html = sprintf(
+			$acceptance_text,
+			'<a href="' . esc_url( get_permalink( $page ) ) . '">' . esc_html( get_the_title( $page ) ) . '</a>'
+		);
+	}
+
+	return $html;
 }
 
 /**
