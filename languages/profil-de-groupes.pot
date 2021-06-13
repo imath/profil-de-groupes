@@ -1,31 +1,31 @@
-# Copyright (C) 2017 imath
+# Copyright (C) 2021 imath
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Profil de Groupes 1.0.1\n"
+"Project-Id-Version: Profil de Groupes 1.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/imath/profil-de-groupes/issues\n"
-"POT-Creation-Date: 2017-10-31 03:02:20+00:00\n"
+"POT-Creation-Date: 2021-06-13 16:35:11+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2021-MO-DA HO:MI+ZONE\n"
 "Last-Translator: imath <contact@imathi.eu>\n"
 "Language-Team: FRENCH <contact@imathi.eu>\n"
-"X-Generator: grunt-wp-i18n 0.5.4\n"
+"X-Generator: grunt-wp-i18n 1.0.3\n"
 
 #: inc/admin.php:55
 msgid "Liste des champs de profil pour les Groupes"
 msgstr ""
 
-#: inc/admin.php:197
+#: inc/admin.php:211
 msgid "Erreur"
 msgstr ""
 
-#: inc/admin.php:198
+#: inc/admin.php:212
 msgid "L'installation a échoué."
 msgstr ""
 
-#: inc/admin.php:209
+#: inc/admin.php:223
 msgid "Il est impératif que le nom des champs soient uniques."
 msgstr ""
 
@@ -49,6 +49,16 @@ msgstr ""
 
 #: inc/classes/class-profil-de-groupes-group-extension.php:213
 msgid "Profil mis à jour avec succès."
+msgstr ""
+
+#: inc/functions.php:402 inc/functions.php:535
+#. translators: %s: link to the page the user needs to accept the terms of.
+msgid "Ce groupe est en accord avec %s."
+msgstr ""
+
+#: inc/functions.php:527
+#. translators: %s: link to the page the user needs to accept the terms of.
+msgid "Ce groupe n’est pas en accord avec %s."
 msgstr ""
 
 #: templates/groups/single/profil-du-groupe.php:51
@@ -77,12 +87,12 @@ msgstr ""
 msgid "https://imathi.eu/"
 msgstr ""
 
-#: inc/admin.php:149
+#: inc/admin.php:163
 msgctxt "admin page title"
 msgid "Champs de profil des groupes"
 msgstr ""
 
-#: inc/admin.php:150
+#: inc/admin.php:164
 msgctxt "admin menu title"
 msgid "Champs de profil"
 msgstr ""

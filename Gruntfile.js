@@ -26,7 +26,7 @@ module.exports = function( grunt ) {
 				]
 			},
 			files: {
-				src: ['**/*.php', '!**/node_modules/**'],
+				src: ['**/*.php', '!**/node_modules/**', '!**/vendor/**'],
 				expand: true
 			}
 		},
@@ -34,7 +34,7 @@ module.exports = function( grunt ) {
 			target: {
 				options: {
 					domainPath: '/languages',
-					exclude: ['/node_modules'],
+					exclude: ['node_modules/.*', 'vendor/.*'],
 					mainFile: 'profil-de-groupes.php',
 					potFilename: 'profil-de-groupes.pot',
 					processPot: function( pot ) {

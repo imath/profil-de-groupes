@@ -2,32 +2,32 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Profil de Groupes 1.0.1\n"
+"Project-Id-Version: Profil de Groupes 1.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/imath/profil-de-groupes/issues\n"
-"POT-Creation-Date: 2017-10-31 03:02:20+00:00\n"
-"PO-Revision-Date: 2017-10-31 04:03+0100\n"
+"POT-Creation-Date: 2021-06-13 16:35:11+00:00\n"
+"PO-Revision-Date: 2021-06-13 18:35+0200\n"
 "Last-Translator: imath <mathchristo@yahoo.fr>\n"
 "Language-Team: FRENCH <contact@imathi.eu>\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: inc/admin.php:55
 msgid "Liste des champs de profil pour les Groupes"
 msgstr "Profile fields for Groups"
 
-#: inc/admin.php:197
+#: inc/admin.php:211
 msgid "Erreur"
 msgstr "Error"
 
-#: inc/admin.php:198
+#: inc/admin.php:212
 msgid "L'installation a échoué."
 msgstr "Installation failed."
 
-#: inc/admin.php:209
+#: inc/admin.php:223
 msgid "Il est impératif que le nom des champs soient uniques."
 msgstr "Unique names for fields are required."
 
@@ -52,6 +52,16 @@ msgstr "Errors occurred while updating the group's profile fields."
 #: inc/classes/class-profil-de-groupes-group-extension.php:213
 msgid "Profil mis à jour avec succès."
 msgstr "Profile successfully updated."
+
+#. translators: %s: link to the page the user needs to accept the terms of.
+#: inc/functions.php:402 inc/functions.php:535
+msgid "Ce groupe est en accord avec %s."
+msgstr "This group agrees with %s."
+
+#. translators: %s: link to the page the user needs to accept the terms of.
+#: inc/functions.php:527
+msgid "Ce groupe n’est pas en accord avec %s."
+msgstr "This group does not agree with %s."
 
 #: templates/groups/single/profil-du-groupe.php:51
 msgid ""
@@ -80,12 +90,12 @@ msgstr "imath"
 msgid "https://imathi.eu/"
 msgstr "https://imathi.eu/"
 
-#: inc/admin.php:149
+#: inc/admin.php:163
 msgctxt "admin page title"
 msgid "Champs de profil des groupes"
 msgstr "Groups Profile fields"
 
-#: inc/admin.php:150
+#: inc/admin.php:164
 msgctxt "admin menu title"
 msgid "Champs de profil"
 msgstr "Profile fields"
