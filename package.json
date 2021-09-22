@@ -14,6 +14,7 @@
     "grunt-git-archive": "~0.0.3",
     "grunt-legacy-util": "^1.0.0",
     "grunt-wp-i18n": "^1.0.3",
+    "set-value": ">=4.0.1",
     "matchdep": "^2.0.0"
   },
   "engines": {
