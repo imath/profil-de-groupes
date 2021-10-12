@@ -1,6 +1,5 @@
 module.exports = function( grunt ) {
 	require( 'matchdep' ).filterDev( ['grunt-*', '!grunt-legacy-util'] ).forEach( grunt.loadNpmTasks );
-	grunt.util = require( 'grunt-legacy-util' );
 
 	grunt.initConfig( {
 		pkg: grunt.file.readJSON( 'package.json' ),
@@ -47,14 +46,16 @@ module.exports = function( grunt ) {
 				}
 			}
 		},
-		phpunit: {
-			'default': {
-				cmd: './vendor/phpunit/phpunit/phpunit',
-				args: ['-c', 'phpunit.xml.dist']
+		exec: {
+			test_php: {
+				command: 'composer test',
+				stdout: true,
+				stderr: true
 			},
-			'multisite': {
-				cmd: './vendor/phpunit/phpunit/phpunit',
-				args: ['-c', 'tests/phpunit/multisite.xml']
+			test_php_multisite: {
+				command: 'composer test_multisite',
+				stdout: true,
+				stderr: true
 			}
 		},
 		'git-archive': {
@@ -71,13 +72,7 @@ module.exports = function( grunt ) {
 	/**
 	 * Register tasks.
 	 */
-	grunt.registerMultiTask( 'phpunit', 'Runs PHPUnit tests, including the multisite tests.', function() {
-		grunt.util.spawn( {
-			args: this.data.args,
-			cmd:  this.data.cmd,
-			opts: { stdio: 'inherit' }
-		}, this.async() );
-	} );
+	grunt.registerTask( 'phpunit', ['exec:test_php', 'exec:test_php_multisite'] );
 
 	grunt.registerTask( 'compress', ['git-archive'] );
 

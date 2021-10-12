@@ -27,5 +27,9 @@
 		"wp-coding-standards/wpcs": "*",
 		"wp-phpunit/wp-phpunit": "^5.7",
 		"phpunit/phpunit": "^7.5"
+	},
+  "scripts": {
+		"test": "@php ./vendor/phpunit/phpunit/phpunit",
+		"test_multisite": "@php ./vendor/phpunit/phpunit/phpunit -c tests/phpunit/multisite.xml"
 	}
 }
