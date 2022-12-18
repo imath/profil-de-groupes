@@ -5,7 +5,9 @@
  * Description: Un profil pour les groupes BuddyPress.
  * Version: 1.2.0
  * Requires at least: 4.8
- * Tested up to: 5.7
+ * Requires PHP:      5.6
+ * Requires Plugins:  buddypress
+ * Tested up to: 6.1
  * License: GPLv2 or later
  * Author: imath
  * Author URI: https://imathi.eu/
