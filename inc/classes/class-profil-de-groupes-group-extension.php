@@ -23,19 +23,11 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 	 * @since  1.0.0
 	 */
 	public function __construct() {
-		$group = groups_get_current_group();
-
-		$visibility = 'private';
-		if ( isset( $group->status ) && 'public' === $group->status ) {
-			$visibility = 'public';
-		}
-
 		parent::init(  array(
 			'slug'              => profil_de_groupes_get_slug(),
 			'name'              => __( 'A propos de nous', 'profil-de-groupes' ),
-			'visibility'        => $visibility,
 			'nav_item_position' => 14,
-			'enable_nav_item'   => true,
+			'show_tab'          => 'loggedin',
 			'screens'           => array(
 				'admin' => array(
 					'enabled' => false,
@@ -49,6 +41,24 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 				),
 			),
 		) );
+	}
+
+	/**
+	 * Determine whether the current user should see this nav tab.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param bool $user_can_see_nav_item Whether or not the user can see the nav item.
+	 * @return bool
+	 */
+	public function user_can_see_nav_item( $user_can_see_nav_item = false ) {
+		$group = groups_get_current_group();
+
+		if ( isset( $group->status ) && 'public' !== $group->status ) {
+			return (bool) groups_is_user_member( bp_loggedin_user_id(), $group->id ) || bp_current_user_can( 'bp_moderate' );
+		}
+
+		return parent::user_can_see_nav_item( $user_can_see_nav_item );
 	}
 
 	/**
@@ -112,7 +122,11 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 			return;
 		}
 
+		add_filter( 'bp_get_template_stack', 'profil_de_groupes_template_stack', 10, 1 );
+
 		bp_get_template_part( 'groups/single/profil-du-groupe' );
+
+		remove_filter( 'bp_get_template_stack', 'profil_de_groupes_template_stack', 10, 1 );
 	}
 
 	/**
@@ -131,7 +145,11 @@ class Profil_De_Groupes_Group_Extension extends BP_Group_Extension {
 		$pdg = profil_de_groupes();
 		$pdg->current_group_id = $group_id;
 
+		add_filter( 'bp_get_template_stack', 'profil_de_groupes_template_stack', 10, 1 );
+
 		bp_get_template_part( 'groups/single/admin/profil-du-groupe' );
+
+		remove_filter( 'bp_get_template_stack', 'profil_de_groupes_template_stack', 10, 1 );
 
 		unset( $pdg->current_group_id );
 	}

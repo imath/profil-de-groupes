@@ -19,10 +19,6 @@ defined( 'ABSPATH' ) || exit;
  * @return array                 The list of available locations to get BuddyPress templates
  */
 function profil_de_groupes_template_stack( $template_stack = array() ) {
-	if ( ! bp_is_group() ) {
-		return $template_stack;
-	}
-
 	// Set default priority into the Stack
 	$priority = 0;
 
@@ -42,7 +38,6 @@ function profil_de_groupes_template_stack( $template_stack = array() ) {
 		$bp_legacy
 	);
 }
-add_filter( 'bp_get_template_stack', 'profil_de_groupes_template_stack', 10, 1 );
 
 /**
  * Builds the query argument for the Group's profile loop.
