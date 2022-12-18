@@ -2,17 +2,17 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Profil de Groupes 1.1.0\n"
+"Project-Id-Version: Profil de Groupes 1.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/imath/profil-de-groupes/issues\n"
-"POT-Creation-Date: 2021-06-13 16:35:11+00:00\n"
-"PO-Revision-Date: 2021-06-13 18:35+0200\n"
+"POT-Creation-Date: 2022-12-18 08:08:14+00:00\n"
+"PO-Revision-Date: 2022-12-18 09:10+0100\n"
 "Last-Translator: imath <mathchristo@yahoo.fr>\n"
 "Language-Team: FRENCH <contact@imathi.eu>\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 1.7.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: inc/admin.php:55
@@ -31,25 +31,25 @@ msgstr "Installation failed."
 msgid "Il est impératif que le nom des champs soient uniques."
 msgstr "Unique names for fields are required."
 
-#: inc/classes/class-profil-de-groupes-group-extension.php:35
+#: inc/classes/class-profil-de-groupes-group-extension.php:28
 msgid "A propos de nous"
 msgstr "About us"
 
-#: inc/classes/class-profil-de-groupes-group-extension.php:73
+#: inc/classes/class-profil-de-groupes-group-extension.php:83
 msgid "Une erreur est survenue, merci de contacter l'administrateur de ce site"
 msgstr "An error occurred, please contact the site administrator"
 
-#: inc/classes/class-profil-de-groupes-group-extension.php:167
+#: inc/classes/class-profil-de-groupes-group-extension.php:185
 msgid "Certains champs requis sont manquants. Merci de les définir."
 msgstr "Some required fields are missing. Please make sure to define them."
 
-#: inc/classes/class-profil-de-groupes-group-extension.php:208
+#: inc/classes/class-profil-de-groupes-group-extension.php:226
 msgid ""
 "Des erreurs sont survenues lors de la mise à jour des champs de profil du "
 "groupe."
 msgstr "Errors occurred while updating the group's profile fields."
 
-#: inc/classes/class-profil-de-groupes-group-extension.php:213
+#: inc/classes/class-profil-de-groupes-group-extension.php:231
 msgid "Profil mis à jour avec succès."
 msgstr "Profile successfully updated."
 
