@@ -6,8 +6,8 @@ class Profil_De_Groupes_Functions_Tests extends BP_UnitTestCase {
 	protected $groups = array();
 	protected $fields = array();
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		foreach ( array( 'foo', 'bar' ) as $field_name ) {
 			$this->fields[ $field_name ] = $this->factory->xprofile_field->create( array(

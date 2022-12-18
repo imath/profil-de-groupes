@@ -1,6 +1,7 @@
 *DS_*
 
 phpunit.xml
+.phpunit.result.cache
 
 pids
 logs
