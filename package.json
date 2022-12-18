@@ -1,37 +1,34 @@
 {
-  "author": "imath",
-  "bugs": {
-    "url": "https://github.com/imath/profil-de-groupes/issues"
-  },
-  "description": "Profile fields for your BuddyPress groups.",
-  "devDependencies": {
-    "grunt": "^1.5.3",
-    "grunt-check-dependencies": "~1.0.0",
-    "grunt-checktextdomain": "~1.0.1",
-    "grunt-contrib-copy": "~1.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-exec": "~1.0.1",
-    "grunt-git-archive": "~0.0.3",
-    "grunt-wp-i18n": "^1.0.3",
-    "set-value": ">=4.0.1",
-    "matchdep": "^2.0.0"
-  },
-  "engines": {
-		"node": ">=14.15.0",
-		"npm": ">=6.14.8"
+	"author": "imath",
+	"bugs": {
+		"url": "https://github.com/imath/profil-de-groupes/issues"
 	},
-  "keywords": [
-    "buddypress",
-    "groups",
-    "profile",
-    "fields"
-  ],
-  "homepage": "https://imathi.eu/tag/profil-de-groupes",
-  "license": "GPL-2.0+",
-  "name": "profil-de-groupes",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/imath/profil-de-groupes.git"
-  },
-  "version": "1.1.0"
+	"description": "Profile fields for your BuddyPress groups.",
+	"devDependencies": {
+		"grunt": "^1.5.3",
+		"grunt-checktextdomain": "~1.0.1",
+		"grunt-contrib-copy": "~1.0.0",
+		"grunt-exec": "^3.0.0",
+		"grunt-git-archive": "~0.0.3",
+		"grunt-wp-i18n": "^1.0.3",
+		"matchdep": "^2.0.0"
+	},
+	"engines": {
+		"node": ">=14.15.0",
+		"npm": ">=6.14.8 <7"
+	},
+	"keywords": [
+		"buddypress",
+		"groups",
+		"profile",
+		"fields"
+	],
+	"homepage": "https://imathi.eu/tag/profil-de-groupes",
+	"license": "GPL-2.0+",
+	"name": "profil-de-groupes",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/imath/profil-de-groupes.git"
+	},
+	"version": "1.1.0"
 }
